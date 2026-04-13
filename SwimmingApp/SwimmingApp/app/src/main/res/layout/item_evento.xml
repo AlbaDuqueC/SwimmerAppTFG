@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/tvLetraInicial"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="#F4A825"
+        android:gravity="center"
+        android:text="E"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginEnd="12dp"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvNombreEvento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Entrenamiento"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvFechaEvento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha"
+            android:textSize="12sp"
+            android:textColor="#666666"/>
+    </LinearLayout>
+
+</LinearLayout>

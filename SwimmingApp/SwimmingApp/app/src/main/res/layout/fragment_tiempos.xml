@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#A8D8E8" android:orientation="vertical" android:padding="24dp">
+    <LinearLayout android:id="@+id/layoutSelectorNadador"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:visibility="gone">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Nadador" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+        <Spinner android:id="@+id/spinnerNadador"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:background="@android:color/white" android:layout_marginBottom="16dp"/>
+    </LinearLayout>
+    <EditText android:id="@+id/etPrueba"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Prueba (ej: 100m libre)" android:background="@android:color/white"
+        android:padding="12dp" android:layout_marginBottom="16dp"/>
+    <CheckBox android:id="@+id/cbTiempoNadado"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Tiempo nadado" android:layout_marginBottom="8dp"/>
+    <CheckBox android:id="@+id/cbPruebaTiempo"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Prueba tiempo" android:layout_marginBottom="24dp"/>
+    <Button android:id="@+id/btnContinuar"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center" android:text="Continuar"
+        android:backgroundTint="#F4A825" android:textColor="#FFFFFF"/>
+</LinearLayout>

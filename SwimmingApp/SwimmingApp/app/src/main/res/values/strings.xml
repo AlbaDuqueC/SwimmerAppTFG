@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Swimming App</string>
+    <string name="inicio">Inicio</string>
+    <string name="calendario">Calendario</string>
+    <string name="tiempos">Tiempos</string>
+    <string name="equipo">Equipo</string>
+    <string name="perfil">Perfil</string>
+</resources>

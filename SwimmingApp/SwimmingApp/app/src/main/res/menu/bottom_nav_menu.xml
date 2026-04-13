@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="Inicio"/>
+
+    <item
+        android:id="@+id/calendarioFragment"
+        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:title="Calendario"/>
+
+    <item
+        android:id="@+id/tiemposFragment"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Tiempos"/>
+
+    <item
+        android:id="@+id/equipoFragment"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="Equipo"/>
+
+    <item
+        android:id="@+id/perfilFragment"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Perfil"/>
+
+</menu>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.swimming.app.presentation.home.HomeFragment"
+        android:label="Inicio"/>
+
+    <fragment
+        android:id="@+id/calendarioFragment"
+        android:name="com.swimming.app.presentation.calendario.CalendarioFragment"
+        android:label="Calendario"/>
+
+    <fragment
+        android:id="@+id/tiemposFragment"
+        android:name="com.swimming.app.presentation.tiempos.TiemposFragment"
+        android:label="Tiempos">
+        <action
+            android:id="@+id/action_tiempos_to_cronometro"
+            app:destination="@id/cronometroFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/cronometroFragment"
+        android:name="com.swimming.app.presentation.tiempos.CronometroFragment"
+        android:label="Cronómetro"/>
+
+    <fragment
+        android:id="@+id/equipoFragment"
+        android:name="com.swimming.app.presentation.equipo.EquipoFragment"
+        android:label="Equipo">
+        <action
+            android:id="@+id/action_equipo_to_crearNadador"
+            app:destination="@id/crearNadadorFragment"/>
+        <action
+            android:id="@+id/action_equipo_to_crearEquipo"
+            app:destination="@id/crearEquipoFragment"/>
+        <action
+            android:id="@+id/action_equipo_to_imprimir"
+            app:destination="@id/imprimirFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/crearNadadorFragment"
+        android:name="com.swimming.app.presentation.equipo.CrearNadadorFragment"
+        android:label="Crear Nadador"/>
+
+    <fragment
+        android:id="@+id/crearEquipoFragment"
+        android:name="com.swimming.app.presentation.equipo.CrearEquipoFragment"
+        android:label="Crear Equipo"/>
+
+    <fragment
+        android:id="@+id/imprimirFragment"
+        android:name="com.swimming.app.presentation.equipo.ImprimirFragment"
+        android:label="Imprimir"/>
+
+    <fragment
+        android:id="@+id/perfilFragment"
+        android:name="com.swimming.app.presentation.perfil.PerfilFragment"
+        android:label="Perfil">
+        <action
+            android:id="@+id/action_perfil_to_editarPerfil"
+            app:destination="@id/editarPerfilFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/editarPerfilFragment"
+        android:name="com.swimming.app.presentation.perfil.EditarPerfilFragment"
+        android:label="Editar Perfil"/>
+
+</navigation>

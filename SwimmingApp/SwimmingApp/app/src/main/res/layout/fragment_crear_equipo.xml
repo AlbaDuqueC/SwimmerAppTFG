@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#A8D8E8"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CREAR UN EQUIPO"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#1A3A4A"
+        android:layout_marginBottom="24dp"/>
+
+    <EditText
+        android:id="@+id/etNombreEquipo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nombre del equipo"
+        android:background="@android:color/white"
+        android:padding="12dp"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etApodo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Apodo (opcional)"
+        android:background="@android:color/white"
+        android:padding="12dp"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnCrear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crear"
+        android:backgroundTint="#F4A825"
+        android:textColor="#FFFFFF"
+        android:paddingHorizontal="48dp"/>
+
+</LinearLayout>
