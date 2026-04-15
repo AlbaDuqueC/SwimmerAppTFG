@@ -13,6 +13,7 @@ import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+//Pantalla de carga
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
