@@ -25,3 +25,16 @@ class EliminarNadadorUseCase @Inject constructor(private val repo: NadadorReposi
         return resultado
     }
 }
+
+class ObtenerNadadorPorEmailUseCase @Inject constructor(private val repo: NadadorRepository) {
+    suspend operator fun invoke(email: String): NetworkResult<Nadador> {
+        val resultado = repo.obtenerNadadorPorEmail(email)
+        return resultado
+    }
+}
+
+class VincularNadadorUseCase @Inject constructor(private val repo: NadadorRepository) {
+    suspend operator fun invoke(idNadador: Int, codigo: Int): NetworkResult<Nadador> {
+        return repo.vincularNadador(idNadador, codigo)
+    }
+}

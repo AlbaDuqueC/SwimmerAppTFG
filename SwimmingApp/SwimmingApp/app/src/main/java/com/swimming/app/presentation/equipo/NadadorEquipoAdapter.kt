@@ -8,8 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.swimming.app.databinding.ItemEventoBinding
 import com.swimming.app.domain.model.NadadorEquipo
 
-/** Adaptador del RecyclerView de nadadores en la pantalla de Equipo. */
-class NadadorEquipoAdapter : ListAdapter<NadadorEquipo, NadadorEquipoAdapter.ViewHolder>(DiffCallback()) {
+class NadadorEquipoAdapter(
+    private val onClick: ((NadadorEquipo) -> Unit)? = null
+) : ListAdapter<NadadorEquipo, NadadorEquipoAdapter.ViewHolder>(DiffCallback()) {
 
     inner class ViewHolder(private val binding: ItemEventoBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -18,13 +19,13 @@ class NadadorEquipoAdapter : ListAdapter<NadadorEquipo, NadadorEquipoAdapter.Vie
             binding.tvLetraInicial.text = nadador.nombre.firstOrNull()?.uppercase() ?: "N"
             binding.tvNombreEvento.text = "${nadador.nombre} ${nadador.apellidos}"
             binding.tvFechaEvento.text = "Código: ${nadador.codigo}"
+            binding.root.setOnClickListener { onClick?.invoke(nadador) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemEventoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        val resultado = ViewHolder(binding)
-        return resultado
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

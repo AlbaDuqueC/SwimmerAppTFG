@@ -18,3 +18,5 @@ class CrearNadadorEquipoUseCase @Inject constructor(private val repo: NadadorEqu
         return resultado
     }
 }
+
+

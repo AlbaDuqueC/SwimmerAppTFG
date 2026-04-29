@@ -47,10 +47,10 @@ class EquipoViewModel @Inject constructor(
         }
     }
 
-    fun crearNuevoEquipo(nombre: String) {
+    fun crearNuevoEquipo(nombre: String, idEntrenador: Int?) {
         viewModelScope.launch {
             _equipoCreado.value = NetworkResult.Loading
-            val resultado = crearEquipo(nombre)
+            val resultado = crearEquipo(nombre, idEntrenador)
             _equipoCreado.value = resultado
         }
     }

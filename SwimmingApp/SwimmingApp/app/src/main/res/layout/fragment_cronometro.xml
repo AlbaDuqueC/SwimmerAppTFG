@@ -13,24 +13,36 @@
         android:layout_height="wrap_content"
         android:text="Nadador / 100m"
         android:textSize="14sp"
+        android:textColor="#1A3A4A"
         android:layout_marginBottom="32dp"/>
 
+    <!-- Círculo naranja con el tiempo -->
     <FrameLayout
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:background="#F4A825"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="32dp">
 
-        <Chronometer
-            android:id="@+id/cronometro"
+        <!-- Fondo del círculo -->
+        <View
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="@drawable/circulo_naranja"/>
+
+        <!-- TextView que muestra el tiempo con milisegundos -->
+        <TextView
+            android:id="@+id/tvTiempo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textSize="36sp"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"/>
+            android:text="00:00"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:textColor="#1A3A4A"
+            android:fontFamily="monospace"/>
+
     </FrameLayout>
 
+    <!-- Botones play/stop y reset -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,20 +54,20 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:src="@android:drawable/ic_media_play"
-            android:background="#1A3A4A"
+            android:background="#F4A825"
             android:layout_marginEnd="24dp"/>
 
         <ImageButton
             android:id="@+id/btnReset"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:src="@android:drawable/ic_menu_rotate"
+            android:src="@android:drawable/ic_media_pause"
             android:background="#1A3A4A"/>
     </LinearLayout>
 
     <Button
         android:id="@+id/btnCrear"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Crear"
         android:backgroundTint="#F4A825"

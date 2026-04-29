@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.swimming.app.presentation.home.HomeFragment"
-        android:label="Inicio"/>
+        android:label="Inicio">
+        <action
+            android:id="@+id/action_homeFragment_to_perfilFragment"
+            app:destination="@id/perfilFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/calendarioFragment"
@@ -21,6 +25,9 @@
         <action
             android:id="@+id/action_tiempos_to_cronometro"
             app:destination="@id/cronometroFragment"/>
+        <action
+            android:id="@+id/action_tiempos_to_crearTiempo"
+            app:destination="@id/crearTiempoFragment"/>
     </fragment>
 
     <fragment
@@ -41,6 +48,14 @@
         <action
             android:id="@+id/action_equipo_to_imprimir"
             app:destination="@id/imprimirFragment"/>
+
+        <action
+            android:id="@+id/action_equipo_to_crearTiempo"
+            app:destination="@id/crearTiempoFragment"/>
+
+        <action
+            android:id="@+id/action_equipo_to_ingresarEquipo"
+            app:destination="@id/ingresarEquipoFragment"/>
     </fragment>
 
     <fragment
@@ -71,5 +86,23 @@
         android:id="@+id/editarPerfilFragment"
         android:name="com.swimming.app.presentation.perfil.EditarPerfilFragment"
         android:label="Editar Perfil"/>
+
+    <fragment
+        android:id="@+id/crearTiempoFragment"
+        android:name="com.swimming.app.presentation.tiempos.CrearTiempoFragment"
+        android:label="Crear Tiempo">
+        <argument
+            android:name="idNadadorEquipo"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+        <action
+            android:id="@+id/action_crearTiempo_to_cronometro"
+            app:destination="@id/cronometroFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/ingresarEquipoFragment"
+        android:name="com.swimming.app.presentation.equipo.IngresarEquipoFragment"
+        android:label="Unirse a Equipo"/>
 
 </navigation>

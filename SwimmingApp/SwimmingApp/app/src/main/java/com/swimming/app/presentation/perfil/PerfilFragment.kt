@@ -1,5 +1,6 @@
 package com.swimming.app.presentation.perfil
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.swimming.app.R
 import com.swimming.app.databinding.FragmentPerfilBinding
+import com.swimming.app.presentation.auth.LoginActivity
 import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -42,6 +44,17 @@ class PerfilFragment : Fragment() {
     private fun configurarBotones() {
         binding.btnEditarPerfil.setOnClickListener {
             findNavController().navigate(R.id.action_perfil_to_editarPerfil)
+        }
+
+        binding.btnCerrarSesion.setOnClickListener {
+            // 1. Limpiamos los datos de sesión
+            sessionManager.cerrarSesion()
+
+            // 2. Navegamos al Login y limpiamos el stack para que no pueda volver atrás
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            requireActivity().finish()
         }
     }
 

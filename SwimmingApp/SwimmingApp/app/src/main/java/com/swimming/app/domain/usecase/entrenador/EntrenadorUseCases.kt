@@ -25,3 +25,10 @@ class EliminarEntrenadorUseCase @Inject constructor(private val repo: Entrenador
         return resultado
     }
 }
+
+class ObtenerEntrenadorPorEmailUseCase @Inject constructor(private val repo: EntrenadorRepository) {
+    suspend operator fun invoke(email: String): NetworkResult<Entrenador> {
+        val resultado = repo.obtenerEntrenadorPorEmail(email)
+        return resultado
+    }
+}

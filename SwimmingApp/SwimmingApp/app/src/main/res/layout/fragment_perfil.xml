@@ -62,6 +62,16 @@
             android:text="Equipo: -"
             android:textSize="14sp"
             android:layout_marginTop="4dp"/>
+
+        <Button
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cerrar Sesión"
+            android:backgroundTint="#CC0000"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="16dp"
+            android:paddingHorizontal="32dp"/>
     </LinearLayout>
 
     <Button

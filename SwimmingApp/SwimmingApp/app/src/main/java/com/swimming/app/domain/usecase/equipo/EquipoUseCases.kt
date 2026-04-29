@@ -13,8 +13,8 @@ class ObtenerEquipoUseCase @Inject constructor(private val repo: EquipoRepositor
 }
 
 class CrearEquipoUseCase @Inject constructor(private val repo: EquipoRepository) {
-    suspend operator fun invoke(nombre: String): NetworkResult<Equipo> {
-        val resultado = repo.crearEquipo(nombre)
+    suspend operator fun invoke(nombre: String, idEntrenador: Int?): NetworkResult<Equipo> {
+        val resultado = repo.crearEquipo(nombre, idEntrenador)
         return resultado
     }
 }

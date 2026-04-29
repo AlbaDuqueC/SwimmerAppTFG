@@ -24,6 +24,13 @@ fun RutinaResponseDto.toDomain() = Rutina(id, idRutina, contenido, fecha, mostra
 fun RutinaResponseDto.toEntity() = RutinaEntity(id, idRutina, contenido, fecha, mostrar, idUsuario)
 fun RutinaEntity.toDomain() = Rutina(id, idRutina, contenido, fecha, mostrar, idUsuario)
 
-fun MarcaDeTiempoResponseDto.toDomain() = MarcaDeTiempo(id, idMarca, tiempo, descripcion, idNadadorEquipo, idNadador)
+fun MarcaDeTiempoResponseDto.toDomain() = MarcaDeTiempo(
+    id = id,
+    idMarca = idMarca,
+    tiempo = tiempo,
+    descripcion = descripcion,
+    idNadadorEquipo = idNadadorEquipo ?: 0,   // ← ojo aquí
+    idNadador = idNadador
+)
 fun MarcaDeTiempoResponseDto.toEntity() = MarcaDeTiempoEntity(id, idMarca, tiempo, descripcion, idNadadorEquipo, idNadador)
 fun MarcaDeTiempoEntity.toDomain() = MarcaDeTiempo(id, idMarca, tiempo, descripcion, idNadadorEquipo, idNadador)

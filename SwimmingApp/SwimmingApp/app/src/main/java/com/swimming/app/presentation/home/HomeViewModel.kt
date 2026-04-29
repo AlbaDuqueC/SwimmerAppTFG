@@ -22,7 +22,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _rutinas.value = NetworkResult.Loading
             val resultado = obtenerRutinas(sessionManager.getUserId())
-            _rutinas.value = resultado
+            // Ordenamos por fecha (las más cercanas primero)
+            _rutinas.value = if (resultado is NetworkResult.Success) {
+                NetworkResult.Success(resultado.data.sortedBy { it.fecha })
+            } else resultado
         }
     }
 }

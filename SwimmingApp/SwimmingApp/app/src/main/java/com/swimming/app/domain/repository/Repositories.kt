@@ -5,13 +5,16 @@ import com.swimming.app.utils.NetworkResult
 
 interface NadadorRepository {
     suspend fun obtenerNadador(id: Int): NetworkResult<Nadador>
+    suspend fun obtenerNadadorPorEmail(email: String): NetworkResult<Nadador>  // ✨ NUEVO
     suspend fun crearNadador(nombre: String, apellidos: String, email: String, password: String): NetworkResult<Nadador>
     suspend fun actualizarNadador(id: Int, nombre: String, apellidos: String): NetworkResult<Nadador>
     suspend fun eliminarNadador(id: Int): NetworkResult<Boolean>
+    suspend fun vincularNadador(idNadador: Int, codigo: Int): NetworkResult<Nadador>
 }
 
 interface EntrenadorRepository {
     suspend fun obtenerEntrenador(id: Int): NetworkResult<Entrenador>
+    suspend fun obtenerEntrenadorPorEmail(email: String): NetworkResult<Entrenador>  // ✨ NUEVO
     suspend fun crearEntrenador(nombre: String, apellidos: String, email: String, password: String): NetworkResult<Entrenador>
     suspend fun actualizarEntrenador(id: Int, nombre: String, apellidos: String): NetworkResult<Entrenador>
     suspend fun eliminarEntrenador(id: Int): NetworkResult<Boolean>
@@ -19,7 +22,7 @@ interface EntrenadorRepository {
 
 interface EquipoRepository {
     suspend fun obtenerEquipo(id: Int): NetworkResult<Equipo>
-    suspend fun crearEquipo(nombre: String): NetworkResult<Equipo>
+    suspend fun crearEquipo(nombre: String, idEntrenador: Int?): NetworkResult<Equipo>  // ✨ NUEVO param
     suspend fun eliminarEquipo(id: Int): NetworkResult<Boolean>
 }
 
@@ -38,6 +41,9 @@ interface RutinaRepository {
 
 interface MarcaDeTiempoRepository {
     suspend fun obtenerMarcasPorNadadorEquipo(idNadadorEquipo: Int): NetworkResult<List<MarcaDeTiempo>>
-    suspend fun crearMarca(tiempo: String, descripcion: String, idNadadorEquipo: Int, idNadador: Int?): NetworkResult<MarcaDeTiempo>
+    suspend fun obtenerMarcasPorNadador(idNadador: Int): NetworkResult<List<MarcaDeTiempo>>  // ✨ NUEVO
+    suspend fun crearMarca(tiempo: String, descripcion: String, idNadadorEquipo: Int?, idNadador: Int?): NetworkResult<MarcaDeTiempo>
     suspend fun eliminarMarca(id: Int): NetworkResult<Boolean>
 }
+
+

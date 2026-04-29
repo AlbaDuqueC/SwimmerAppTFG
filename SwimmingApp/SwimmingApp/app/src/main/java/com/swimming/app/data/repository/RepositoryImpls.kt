@@ -41,6 +41,23 @@ class NadadorRepositoryImpl @Inject constructor(
         }
         return resultado
     }
+    override suspend fun obtenerNadadorPorEmail(email: String): NetworkResult<Nadador> {
+        val resultado = try {
+            val response = api.obtenerNadadorPorEmail(email)
+            if (response.isSuccessful && response.body()?.datos != null) {
+                val dto = response.body()!!.datos!!
+                dao.insertar(dto.toEntity())
+                NetworkResult.Success(dto.toDomain())
+            } else {
+                NetworkResult.Error(response.body()?.mensaje ?: "Nadador no encontrado")
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error("Sin conexión al servidor")
+        }
+        return resultado
+    }
+
+
 
     override suspend fun crearNadador(nombre: String, apellidos: String, email: String, password: String): NetworkResult<Nadador> {
         val resultado = try {
@@ -89,6 +106,33 @@ class NadadorRepositoryImpl @Inject constructor(
         }
         return resultado
     }
+
+    override suspend fun vincularNadador(idNadador: Int, codigo: Int): NetworkResult<Nadador> {
+        val resultado = try {
+            val response = api.vincularNadador(idNadador, VincularCodigoRequestDto(codigo))
+            if (response.isSuccessful && response.body()?.datos != null) {
+                val dto = response.body()!!.datos!!
+                dao.insertar(dto.toEntity())
+                NetworkResult.Success(dto.toDomain())
+            } else {
+                // Intentar leer el mensaje del error del cuerpo
+                val mensaje = response.body()?.mensaje
+                    ?: response.errorBody()?.string()?.let { extraerMensaje(it) }
+                    ?: "Código incorrecto o no disponible"
+                NetworkResult.Error(mensaje)
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error("Sin conexión al servidor")
+        }
+        return resultado
+    }
+
+    // Helper: extrae "mensaje" del JSON de error que devuelve el API
+    private fun extraerMensaje(json: String): String? = try {
+        com.google.gson.Gson()
+            .fromJson(json, com.swimming.app.data.dto.ApiResponseDto::class.java)
+            ?.mensaje
+    } catch (e: Exception) { null }
 }
 
 class EntrenadorRepositoryImpl @Inject constructor(
@@ -119,6 +163,22 @@ class EntrenadorRepositoryImpl @Inject constructor(
             val local = dao.obtenerPorId(id)
             if (local != null) NetworkResult.Success(local.toDomain())
             else NetworkResult.Error("Sin conexión a internet")
+        }
+        return resultado
+    }
+
+    override suspend fun obtenerEntrenadorPorEmail(email: String): NetworkResult<Entrenador> {
+        val resultado = try {
+            val response = api.obtenerEntrenadorPorEmail(email)
+            if (response.isSuccessful && response.body()?.datos != null) {
+                val dto = response.body()!!.datos!!
+                dao.insertar(dto.toEntity())
+                NetworkResult.Success(dto.toDomain())
+            } else {
+                NetworkResult.Error(response.body()?.mensaje ?: "Entrenador no encontrado")
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error("Sin conexión al servidor")
         }
         return resultado
     }
@@ -204,9 +264,9 @@ class EquipoRepositoryImpl @Inject constructor(
         return resultado
     }
 
-    override suspend fun crearEquipo(nombre: String): NetworkResult<Equipo> {
+    override suspend fun crearEquipo(nombre: String, idEntrenador: Int?): NetworkResult<Equipo> {
         val resultado = try {
-            val response = api.crearEquipo(EquipoRequestDto(nombre))
+            val response = api.crearEquipo(EquipoRequestDto(nombre, idEntrenador))
             if (response.isSuccessful && response.body()?.datos != null) {
                 val dto = response.body()!!.datos!!
                 dao.insertar(dto.toEntity())
@@ -382,7 +442,26 @@ class MarcaDeTiempoRepositoryImpl @Inject constructor(
         return resultado
     }
 
-    override suspend fun crearMarca(tiempo: String, descripcion: String, idNadadorEquipo: Int, idNadador: Int?): NetworkResult<MarcaDeTiempo> {
+    override suspend fun obtenerMarcasPorNadador(idNadador: Int): NetworkResult<List<MarcaDeTiempo>> {
+        val resultado = if (networkChecker.hayConexion()) {
+            try {
+                val response = api.obtenerMarcasPorNadador(idNadador)
+                if (response.isSuccessful && response.body()?.datos != null) {
+                    val lista = response.body()!!.datos!!
+                    NetworkResult.Success(lista.map { it.toDomain() })
+                } else {
+                    NetworkResult.Error(response.body()?.mensaje ?: "Error al obtener marcas")
+                }
+            } catch (e: Exception) {
+                NetworkResult.Error("Sin conexión al servidor")
+            }
+        } else {
+            NetworkResult.Error("Sin conexión a internet")
+        }
+        return resultado
+    }
+
+    override suspend fun crearMarca(tiempo: String, descripcion: String, idNadadorEquipo: Int?, idNadador: Int?): NetworkResult<MarcaDeTiempo> {
         val resultado = try {
             val response = api.crearMarca(MarcaDeTiempoRequestDto(tiempo, descripcion, idNadadorEquipo, idNadador))
             if (response.isSuccessful && response.body()?.datos != null)

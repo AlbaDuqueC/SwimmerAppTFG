@@ -36,4 +36,20 @@ class SessionManager @Inject constructor(
     fun cerrarSesion() {
         prefs.edit().clear().apply()
     }
+
+    fun guardarIdNadadorEquipo(idNadadorEquipo: Int) {
+        prefs.edit().putInt("idNadadorEquipo", idNadadorEquipo).apply()
+    }
+    fun guardarIdNadador(idNadador: Int?) {
+        prefs.edit().putInt("idNadador", idNadador ?: -1).apply()
+    }
+
+    // Asegúrate de que los nombres de las llaves coincidan exactamente al guardar y leer
+    fun getIdNadadorEquipo(): Int = prefs.getInt("idNadadorEquipo", -1)
+
+    fun getIdNadador(): Int = prefs.getInt("idNadador", -1)
+
+    fun guardarEquipoId(equipoId: Int) {
+        prefs.edit().putInt("userEquipoId", equipoId).apply()
+    }
 }

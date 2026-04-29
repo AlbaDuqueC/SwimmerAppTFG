@@ -6,21 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.swimming.app.R
 import com.swimming.app.databinding.FragmentTiemposBinding
-import com.swimming.app.utils.SessionManager
+import com.swimming.app.utils.NetworkResult
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
-/** Pantalla de tiempos. Permite rellenar los datos de la prueba antes de ir al cronómetro. */
 @AndroidEntryPoint
 class TiemposFragment : Fragment() {
 
     private var _binding: FragmentTiemposBinding? = null
     private val binding get() = _binding!!
-
-    @Inject lateinit var sessionManager: SessionManager
+    private val viewModel: TiemposViewModel by viewModels()
+    private lateinit var adapterMias: MarcasAdapter
+    private lateinit var adapterEntrenador: MarcasAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentTiemposBinding.inflate(inflater, container, false)
@@ -29,24 +30,48 @@ class TiemposFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configurarVistaPorRol()
-        configurarBoton()
-    }
 
-    private fun configurarVistaPorRol() {
-        val esEntrenador = sessionManager.esEntrenador()
-        binding.layoutSelectorNadador.visibility = if (esEntrenador) View.VISIBLE else View.GONE
-    }
+        adapterMias = MarcasAdapter()
+        adapterEntrenador = MarcasAdapter()
 
-    private fun configurarBoton() {
-        binding.btnContinuar.setOnClickListener {
-            val prueba = binding.etPrueba.text.toString().trim()
-            if (prueba.isEmpty()) {
-                Toast.makeText(requireContext(), "Escribe el nombre de la prueba", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            findNavController().navigate(R.id.action_tiempos_to_cronometro)
+        binding.rvMarcas.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvMarcas.adapter = adapterMias
+
+        binding.rvMarcasEntrenador.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvMarcasEntrenador.adapter = adapterEntrenador
+
+        binding.fabAnadir.setOnClickListener {
+            findNavController().navigate(R.id.action_tiempos_to_crearTiempo)
         }
+
+        // Lista "Mis marcas" (o lista única para entrenador)
+        viewModel.marcasMias.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is NetworkResult.Success -> {
+                    val lista = result.data?.toList().orEmpty()
+                    adapterMias.submitList(lista)
+                    binding.tvHeaderMias.visibility = if (lista.isNotEmpty()) View.VISIBLE else View.GONE
+                }
+                is NetworkResult.Error -> {
+                    Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
+                    binding.tvHeaderMias.visibility = View.GONE
+                }
+                is NetworkResult.Loading -> {}
+            }
+        }
+
+        // Lista "Asignadas por el entrenador" (solo si hay)
+        viewModel.marcasEntrenador.observe(viewLifecycleOwner) { lista ->
+            adapterEntrenador.submitList(lista.toList())
+            binding.tvHeaderEntrenador.visibility = if (lista.isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
+        viewModel.cargarMarcas()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.cargarMarcas()
     }
 
     override fun onDestroyView() {

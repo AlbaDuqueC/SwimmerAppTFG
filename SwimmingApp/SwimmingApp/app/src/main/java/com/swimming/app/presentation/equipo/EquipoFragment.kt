@@ -16,7 +16,6 @@ import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-/** Pantalla del equipo. Muestra la lista de nadadores. El entrenador puede crear nadadores y equipos. */
 @AndroidEntryPoint
 class EquipoFragment : Fragment() {
 
@@ -40,9 +39,16 @@ class EquipoFragment : Fragment() {
         cargarDatos()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Si el nadador acaba de unirse, al volver le aparecen los datos del equipo
+        cargarDatos()
+    }
+
     private fun configurarVistaPorRol() {
         val esEntrenador = sessionManager.esEntrenador()
         binding.layoutBotonesEntrenador.visibility = if (esEntrenador) View.VISIBLE else View.GONE
+
         binding.btnCrearNadador.setOnClickListener {
             findNavController().navigate(R.id.action_equipo_to_crearNadador)
         }
@@ -55,7 +61,15 @@ class EquipoFragment : Fragment() {
     }
 
     private fun configurarRecyclerView() {
-        adapter = NadadorEquipoAdapter()
+        adapter = NadadorEquipoAdapter { nadador ->
+            // Solo el entrenador puede asignar marcas tocando un nadador
+            if (sessionManager.esEntrenador()) {
+                val bundle = Bundle().apply {
+                    putInt("idNadadorEquipo", nadador.idNadadorEquipo)
+                }
+                findNavController().navigate(R.id.action_equipo_to_crearTiempo, bundle)
+            }
+        }
         binding.rvNadadores.layoutManager = LinearLayoutManager(requireContext())
         binding.rvNadadores.adapter = adapter
     }
@@ -72,7 +86,17 @@ class EquipoFragment : Fragment() {
 
     private fun cargarDatos() {
         val idEquipo = sessionManager.getEquipoId()
-        if (idEquipo != null) viewModel.cargarNadadores(idEquipo)
+        val esEntrenador = sessionManager.esEntrenador()
+
+        when {
+            // Nadador sin equipo → ir a la pantalla de unirse
+            !esEntrenador && idEquipo == null -> {
+                findNavController().navigate(R.id.action_equipo_to_ingresarEquipo)
+            }
+            // Tiene equipo (entrenador o nadador) → cargar lista de nadadores
+            idEquipo != null -> viewModel.cargarNadadores(idEquipo)
+            // Entrenador sin equipo → no carga nada, verá la lista vacía con sus botones
+        }
     }
 
     override fun onDestroyView() {
