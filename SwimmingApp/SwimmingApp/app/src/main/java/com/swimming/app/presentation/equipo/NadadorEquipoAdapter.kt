@@ -1,6 +1,7 @@
 package com.swimming.app.presentation.equipo
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -9,7 +10,9 @@ import com.swimming.app.databinding.ItemEventoBinding
 import com.swimming.app.domain.model.NadadorEquipo
 
 class NadadorEquipoAdapter(
-    private val onClick: ((NadadorEquipo) -> Unit)? = null
+    private val mostrarBotonEliminar: Boolean = false,
+    private val onClick: ((NadadorEquipo) -> Unit)? = null,
+    private val onEliminarClick: ((NadadorEquipo) -> Unit)? = null
 ) : ListAdapter<NadadorEquipo, NadadorEquipoAdapter.ViewHolder>(DiffCallback()) {
 
     inner class ViewHolder(private val binding: ItemEventoBinding) :
@@ -19,7 +22,15 @@ class NadadorEquipoAdapter(
             binding.tvLetraInicial.text = nadador.nombre.firstOrNull()?.uppercase() ?: "N"
             binding.tvNombreEvento.text = "${nadador.nombre} ${nadador.apellidos}"
             binding.tvFechaEvento.text = "Código: ${nadador.codigo}"
+
             binding.root.setOnClickListener { onClick?.invoke(nadador) }
+
+            // Botón papelera: solo visible si está activado
+            binding.btnEliminar.visibility = if (mostrarBotonEliminar) View.VISIBLE else View.GONE
+            binding.btnEliminar.setOnClickListener {
+                android.util.Log.d("ELIMINAR", "1. Click en papelera de ${nadador.nombre}")
+                onEliminarClick?.invoke(nadador)
+            }
         }
     }
 

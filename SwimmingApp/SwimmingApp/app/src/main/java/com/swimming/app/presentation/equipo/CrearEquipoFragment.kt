@@ -37,7 +37,7 @@ class CrearEquipoFragment : Fragment() {
 
     private fun configurarBoton() {
         binding.btnCrear.setOnClickListener {
-            val nombre = binding.etNombreEquipo.text.toString().trim()
+            val nombre = binding.etNombreEquipo.text?.toString()?.trim().orEmpty()
             if (nombre.isEmpty()) {
                 Toast.makeText(requireContext(), "Escribe el nombre del equipo", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener

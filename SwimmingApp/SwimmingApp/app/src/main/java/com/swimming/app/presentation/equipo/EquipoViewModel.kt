@@ -8,6 +8,7 @@ import com.swimming.app.domain.model.Equipo
 import com.swimming.app.domain.model.NadadorEquipo
 import com.swimming.app.domain.usecase.equipo.CrearEquipoUseCase
 import com.swimming.app.domain.usecase.nadadorequipo.CrearNadadorEquipoUseCase
+import com.swimming.app.domain.usecase.nadadorequipo.EliminarNadadorEquipoUseCase
 import com.swimming.app.domain.usecase.nadadorequipo.ObtenerNadadoresEquipoUseCase
 import com.swimming.app.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class EquipoViewModel @Inject constructor(
     private val obtenerNadadores: ObtenerNadadoresEquipoUseCase,
     private val crearNadadorEquipo: CrearNadadorEquipoUseCase,
-    private val crearEquipo: CrearEquipoUseCase
+    private val crearEquipo: CrearEquipoUseCase,
+    private val eliminarNadadorEquipo: EliminarNadadorEquipoUseCase
 ) : ViewModel() {
 
     private val _nadadores = MutableLiveData<NetworkResult<List<NadadorEquipo>>>()
@@ -30,6 +32,9 @@ class EquipoViewModel @Inject constructor(
 
     private val _nadadorCreado = MutableLiveData<NetworkResult<NadadorEquipo>>()
     val nadadorCreado: LiveData<NetworkResult<NadadorEquipo>> = _nadadorCreado
+
+    private val _nadadorEliminado = MutableLiveData<NetworkResult<Boolean>>()
+    val nadadorEliminado: LiveData<NetworkResult<Boolean>> = _nadadorEliminado
 
     fun cargarNadadores(idEquipo: Int) {
         viewModelScope.launch {
@@ -52,6 +57,14 @@ class EquipoViewModel @Inject constructor(
             _equipoCreado.value = NetworkResult.Loading
             val resultado = crearEquipo(nombre, idEntrenador)
             _equipoCreado.value = resultado
+        }
+    }
+
+    fun eliminarNadador(idNadadorEquipo: Int) {
+        viewModelScope.launch {
+            _nadadorEliminado.value = NetworkResult.Loading
+            val resultado = eliminarNadadorEquipo(idNadadorEquipo)
+            _nadadorEliminado.value = resultado
         }
     }
 }

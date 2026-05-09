@@ -11,11 +11,13 @@ interface ApiService {
     @PUT("nadador/{id}") suspend fun actualizarNadador(@Path("id") id: Int, @Body dto: NadadorRequestDto): Response<ApiResponseDto<NadadorResponseDto>>
     @DELETE("nadador/{id}") suspend fun eliminarNadador(@Path("id") id: Int): Response<ApiResponseDto<Boolean>>
 
+
     @POST("entrenador") suspend fun crearEntrenador(@Body dto: EntrenadorRequestDto): Response<ApiResponseDto<EntrenadorResponseDto>>
     @GET("entrenador/{id}") suspend fun obtenerEntrenador(@Path("id") id: Int): Response<ApiResponseDto<EntrenadorResponseDto>>
     @GET("entrenador/email/{email}") suspend fun obtenerEntrenadorPorEmail(@Path("email") email: String): Response<ApiResponseDto<EntrenadorResponseDto>>
     @PUT("entrenador/{id}") suspend fun actualizarEntrenador(@Path("id") id: Int, @Body dto: EntrenadorRequestDto): Response<ApiResponseDto<EntrenadorResponseDto>>
     @DELETE("entrenador/{id}") suspend fun eliminarEntrenador(@Path("id") id: Int): Response<ApiResponseDto<Boolean>>
+
 
     @POST("equipo") suspend fun crearEquipo(@Body dto: EquipoRequestDto): Response<ApiResponseDto<EquipoResponseDto>>
     @GET("equipo/{id}") suspend fun obtenerEquipo(@Path("id") id: Int): Response<ApiResponseDto<EquipoResponseDto>>

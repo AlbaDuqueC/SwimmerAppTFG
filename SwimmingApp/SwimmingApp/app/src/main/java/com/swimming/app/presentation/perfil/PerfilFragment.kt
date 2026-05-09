@@ -47,14 +47,11 @@ class PerfilFragment : Fragment() {
         }
 
         binding.btnCerrarSesion.setOnClickListener {
-            // 1. Limpiamos los datos de sesión
             sessionManager.cerrarSesion()
-
-            // 2. Navegamos al Login y limpiamos el stack para que no pueda volver atrás
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val intent = Intent(requireContext(), com.swimming.app.presentation.splash.SplashActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
             startActivity(intent)
-            requireActivity().finish()
         }
     }
 

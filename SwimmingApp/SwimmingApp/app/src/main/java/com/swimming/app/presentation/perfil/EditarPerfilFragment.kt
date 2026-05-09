@@ -50,14 +50,15 @@ class EditarPerfilFragment : Fragment() {
     }
 
     private fun actualizarPerfil() {
-        val nombre = binding.etNombre.text.toString().trim()
-        val apellidos = binding.etApellidos.text.toString().trim()
+        val nombre = binding.etNombre.text?.toString()?.trim().orEmpty()
+        val apellidos = binding.etApellidos.text?.toString()?.trim().orEmpty()
 
         if (nombre.isEmpty() || apellidos.isEmpty()) {
             Toast.makeText(requireContext(), "Completa todos los campos", Toast.LENGTH_SHORT).show()
             return
         }
 
+        binding.btnAceptar.isEnabled = false  // ← evita doble click
         viewModel.actualizarPerfil(sessionManager.getUserId(), nombre, apellidos, sessionManager.esEntrenador())
     }
 
@@ -79,7 +80,10 @@ class EditarPerfilFragment : Fragment() {
                     Toast.makeText(requireContext(), "Perfil actualizado", Toast.LENGTH_SHORT).show()
                     findNavController().popBackStack()
                 }
-                is NetworkResult.Error -> Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
+                is NetworkResult.Error -> {
+                    Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
+                    binding.btnAceptar.isEnabled = true  // ← reactiva si falla
+                }
                 else -> {}
             }
         }
@@ -88,8 +92,10 @@ class EditarPerfilFragment : Fragment() {
             when (result) {
                 is NetworkResult.Success -> {
                     sessionManager.cerrarSesion()
-                    startActivity(Intent(requireContext(), LoginActivity::class.java))
-                    requireActivity().finish()
+                    val intent = Intent(requireContext(), com.swimming.app.presentation.splash.SplashActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                    startActivity(intent)
                 }
                 is NetworkResult.Error -> Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                 else -> {}

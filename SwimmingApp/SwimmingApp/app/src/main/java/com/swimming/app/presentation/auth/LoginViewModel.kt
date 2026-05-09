@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.swimming.app.domain.usecase.entrenador.ObtenerEntrenadorPorEmailUseCase
-import com.swimming.app.domain.usecase.nadador.ObtenerNadadorPorEmailUseCase
+import com.swimming.app.data.network.ApiService
 import com.swimming.app.utils.Constants
 import com.swimming.app.utils.NetworkResult
 import com.swimming.app.utils.SessionManager
@@ -19,8 +18,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
     private val sessionManager: SessionManager,
-    private val obtenerNadadorPorEmail: ObtenerNadadorPorEmailUseCase,
-    private val obtenerEntrenadorPorEmail: ObtenerEntrenadorPorEmailUseCase
+    private val apiService: ApiService
 ) : ViewModel() {
 
     private val _loginResult = MutableLiveData<NetworkResult<Boolean>>()
@@ -30,20 +28,34 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _loginResult.value = NetworkResult.Loading
             try {
-                // 1) Autenticar contra Firebase
-                val firebaseUser = firebaseAuth.signInWithEmailAndPassword(email, password)
-                    .await().user
-                if (firebaseUser == null) {
-                    _loginResult.value = NetworkResult.Error("Credenciales no válidas")
+                val resultado = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+                val user = resultado.user
+
+                if (user == null) {
+                    _loginResult.value = NetworkResult.Error("No se pudo iniciar sesión.")
                     return@launch
                 }
 
-                // 2) Buscar primero como nadador
-                val nadadorResult = obtenerNadadorPorEmail(email)
-                if (nadadorResult is NetworkResult.Success) {
-                    val nadador = nadadorResult.data
+                // 1. Comprobar si el email está verificado
+                user.reload().await()
+                if (!user.isEmailVerified) {
+                    try { user.sendEmailVerification().await() } catch (_: Exception) {}
+                    firebaseAuth.signOut()
+                    _loginResult.value = NetworkResult.Error(
+                        "Tu correo no está verificado. Te hemos enviado un nuevo email — pulsa el enlace y vuelve a intentar."
+                    )
+                    return@launch
+                }
+
+                // 2. Buscar el usuario en la API por email — primero como nadador, si no, como entrenador
+                val emailUsuario = user.email ?: ""
+                val nombreFb = user.displayName ?: ""
+
+                val resNadador = apiService.obtenerNadadorPorEmail(emailUsuario)
+                if (resNadador.isSuccessful && resNadador.body()?.datos != null) {
+                    val nadador = resNadador.body()!!.datos!!
                     sessionManager.guardarSesion(
-                        id = nadador.id,
+                        id = nadador.idNadador,
                         email = nadador.email,
                         rol = Constants.ROL_NADADOR,
                         nombre = nadador.nombre,
@@ -56,26 +68,23 @@ class LoginViewModel @Inject constructor(
                     return@launch
                 }
 
-                // 3) Si no es nadador, probar como entrenador
-                val entrenadorResult = obtenerEntrenadorPorEmail(email)
-                if (entrenadorResult is NetworkResult.Success) {
-                    val entrenador = entrenadorResult.data
+                val resEntrenador = apiService.obtenerEntrenadorPorEmail(emailUsuario)
+                if (resEntrenador.isSuccessful && resEntrenador.body()?.datos != null) {
+                    val entrenador = resEntrenador.body()!!.datos!!
                     sessionManager.guardarSesion(
-                        id = entrenador.id,
+                        id = entrenador.idEntrenador,
                         email = entrenador.email,
                         rol = Constants.ROL_ENTRENADOR,
                         nombre = entrenador.nombre,
                         apellidos = entrenador.apellidos,
-                        equipoId = entrenador.idEquipoGestionado
+                        equipoId = entrenador.idEquipo
                     )
                     _loginResult.value = NetworkResult.Success(true)
                     return@launch
                 }
 
-                // 4) No es ninguno
-                _loginResult.value = NetworkResult.Error(
-                    "No se encontró el usuario en el servidor. ¿Está registrado correctamente?"
-                )
+                _loginResult.value = NetworkResult.Error("No se encontraron datos del usuario en el servidor.")
+
             } catch (e: Exception) {
                 _loginResult.value = NetworkResult.Error("Error: ${e.localizedMessage}")
             }

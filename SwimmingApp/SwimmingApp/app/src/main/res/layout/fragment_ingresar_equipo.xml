@@ -1,51 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A8D8E8"
-    android:gravity="center"
+    android:background="@color/bg_pantalla"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:gravity="center_vertical"
+    android:padding="@dimen/espacio_l">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Unirme a un equipo"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="#0A2A3D"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pídele a tu entrenador el código que aparece debajo de tu nombre en su lista del equipo."
-        android:textSize="14sp"
-        android:textColor="#1A3A4A"
-        android:gravity="center"
-        android:layout_marginBottom="32dp"/>
+        app:cardBackgroundColor="@color/bg_card"
+        app:cardCornerRadius="@dimen/radio_card"
+        app:cardElevation="0dp">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Código del nadador (6 dígitos)"
-        android:layout_marginBottom="24dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etCodigo"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLength="6"/>
+            android:orientation="vertical"
+            android:padding="@dimen/espacio_l">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                style="@style/TextoTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/espacio_s"
+                android:text="Unirme a un equipo"/>
 
-    <Button
-        android:id="@+id/btnIngresar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Unirme"
-        android:backgroundTint="#F4A825"
-        android:textColor="#FFFFFF"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pídele a tu entrenador el código que aparece bajo tu nombre en su lista del equipo."
+                android:textColor="@color/gris_texto"
+                android:textSize="@dimen/texto_s"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/espacio_l"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Input.Crema"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Código del nadador (6 dígitos)"
+                android:layout_marginBottom="@dimen/espacio_l">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCodigo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:textColor="@color/texto_input"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnIngresar"
+                style="@style/Boton.Primario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Unirme"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

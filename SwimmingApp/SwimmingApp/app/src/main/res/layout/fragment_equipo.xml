@@ -2,10 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A8D8E8"
+    android:background="@color/bg_pantalla"
     android:orientation="vertical"
-    android:padding="16dp">
-
+    android:padding="@dimen/espacio_m">
 
     <!-- Botones solo visibles para entrenador -->
     <LinearLayout
@@ -13,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="@dimen/espacio_m"
         android:visibility="gone">
 
         <Button
@@ -22,10 +21,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="+ Nadador"
-            android:backgroundTint="#F4A825"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:layout_marginEnd="8dp"/>
+            android:backgroundTint="@color/amarillo"
+            android:textColor="@color/texto_primario"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textSize="@dimen/texto_xs"
+            android:layout_marginEnd="@dimen/espacio_s"/>
 
         <Button
             android:id="@+id/btnCrearEquipo"
@@ -33,10 +34,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="+ Equipo"
-            android:backgroundTint="#1A3A4A"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:layout_marginEnd="8dp"/>
+            android:backgroundTint="@color/azul_marino"
+            android:textColor="@color/blanco"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textSize="@dimen/texto_xs"
+            android:layout_marginEnd="@dimen/espacio_s"/>
 
         <Button
             android:id="@+id/btnImprimir"
@@ -44,11 +47,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Imprimir"
-            android:backgroundTint="#5BC8DC"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"/>
+            android:backgroundTint="@color/azul_medio"
+            android:textColor="@color/blanco"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textSize="@dimen/texto_xs"/>
     </LinearLayout>
 
+    <!-- Lista de nadadores -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNadadores"
         android:layout_width="match_parent"

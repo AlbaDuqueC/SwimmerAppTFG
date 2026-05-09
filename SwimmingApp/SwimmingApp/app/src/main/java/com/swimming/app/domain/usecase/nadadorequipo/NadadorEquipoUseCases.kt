@@ -19,4 +19,9 @@ class CrearNadadorEquipoUseCase @Inject constructor(private val repo: NadadorEqu
     }
 }
 
-
+class EliminarNadadorEquipoUseCase @Inject constructor(private val repo: NadadorEquipoRepository) {
+    suspend operator fun invoke(id: Int): NetworkResult<Boolean> {
+        val resultado = repo.eliminarNadadorEquipo(id)
+        return resultado
+    }
+}

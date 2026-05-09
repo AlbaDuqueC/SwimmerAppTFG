@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pestaña seleccionada → amarillo -->
+    <item android:color="@color/amarillo" android:state_checked="true"/>
+    <!-- Pestañas inactivas → azul claro -->
+    <item android:color="@color/azul_claro"/>
+</selector>

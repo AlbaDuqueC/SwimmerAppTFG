@@ -14,7 +14,10 @@ class MarcasAdapter : ListAdapter<MarcaDeTiempo, MarcasAdapter.ViewHolder>(DiffC
         RecyclerView.ViewHolder(binding.root) {
         fun bind(marca: MarcaDeTiempo) {
             binding.tvDescripcion.text = marca.descripcion
-            binding.tvTiempo.text = marca.tiempo
+            binding.tvTiempo.text = com.swimming.app.utils.TiempoFormatter.aFormatoCorto(marca.tiempo)
+            // Inicial del estilo (Mariposa → "M", Crol → "C", etc.)
+            binding.tvLetraInicial.text = marca.descripcion
+                .firstOrNull { it.isLetter() }?.uppercase() ?: "M"
         }
     }
 

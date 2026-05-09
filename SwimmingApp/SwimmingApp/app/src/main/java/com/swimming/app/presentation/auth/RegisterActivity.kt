@@ -60,7 +60,17 @@ class RegisterActivity : AppCompatActivity() {
         viewModel.registerResult.observe(this) { result ->
             binding.progressBar.visibility = View.GONE
             when (result) {
-                is NetworkResult.Success -> { startActivity(Intent(this, MainActivity::class.java)); finish() }
+                is NetworkResult.Success -> {
+                    androidx.appcompat.app.AlertDialog.Builder(this)
+                        .setTitle("¡Cuenta creada!")
+                        .setMessage("Te hemos enviado un email de verificación. Pulsa el enlace del correo y luego inicia sesión.")
+                        .setPositiveButton("Entendido") { _, _ ->
+                            startActivity(Intent(this, LoginActivity::class.java))
+                            finish()
+                        }
+                        .setCancelable(false)
+                        .show()
+                }
                 is NetworkResult.Error -> Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
                 is NetworkResult.Loading -> binding.progressBar.visibility = View.VISIBLE
             }

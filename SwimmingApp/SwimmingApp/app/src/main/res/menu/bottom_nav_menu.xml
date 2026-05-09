@@ -4,21 +4,21 @@
     <item
         android:id="@+id/homeFragment"
         android:icon="@drawable/casa"
-        android:title="Inicio"/>
+        android:title="@string/inicio"/>
 
     <item
         android:id="@+id/calendarioFragment"
         android:icon="@drawable/calendario"
-        android:title="Calendario"/>
+        android:title="@string/calendario"/>
 
     <item
         android:id="@+id/tiemposFragment"
         android:icon="@drawable/cronografo"
-        android:title="Tiempos"/>
+        android:title="@string/tiempos"/>
 
     <item
         android:id="@+id/equipoFragment"
         android:icon="@drawable/hombre_nadando"
-        android:title="Equipo"/>
+        android:title="@string/equipo"/>
 
 </menu>

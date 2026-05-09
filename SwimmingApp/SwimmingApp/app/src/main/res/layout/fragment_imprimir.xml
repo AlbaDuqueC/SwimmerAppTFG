@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A8D8E8"
+    android:background="@color/bg_pantalla"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/espacio_l">
 
     <TextView
+        style="@style/TextoTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Marcas del equipo"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#1A3A4A"
-        android:layout_marginBottom="16dp"/>
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/espacio_m"
+        android:text="Imprimir marcas"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMarcas"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="@dimen/espacio_m"/>
 
     <Button
         android:id="@+id/btnImprimir"
-        android:layout_width="match_parent"
+        style="@style/Boton.Primario"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Imprimir"
-        android:backgroundTint="#F4A825"
-        android:textColor="#FFFFFF"/>
+        android:layout_gravity="center"
+        android:text="Imprimir"/>
 
 </LinearLayout>

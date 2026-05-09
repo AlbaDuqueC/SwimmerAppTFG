@@ -349,10 +349,13 @@ class NadadorEquipoRepositoryImpl @Inject constructor(
     override suspend fun eliminarNadadorEquipo(id: Int): NetworkResult<Boolean> {
         val resultado = try {
             val response = api.eliminarNadadorEquipo(id)
-            if (response.isSuccessful) NetworkResult.Success(true)
-            else NetworkResult.Error("Error al eliminar")
+            if (response.isSuccessful) {
+                NetworkResult.Success(true)
+            } else {
+                NetworkResult.Error(response.body()?.mensaje ?: "Error al eliminar")
+            }
         } catch (e: Exception) {
-            NetworkResult.Error("Sin conexión a internet")
+            NetworkResult.Error("Sin conexión al servidor")
         }
         return resultado
     }

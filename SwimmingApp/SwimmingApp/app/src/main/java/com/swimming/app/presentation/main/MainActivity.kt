@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    // Pestañas top-level: ahí NO mostramos la flecha de atrás
+    /** Pantallas top-level: aquí ocultamos la flecha de atrás. */
     private val pestañasRaiz = setOf(
         R.id.homeFragment,
         R.id.calendarioFragment,
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         val navHost = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHost.navController
 
-        // Foto de perfil → ir a perfil
+        // Avatar → ir al perfil
         binding.btnTopPerfil.setOnClickListener {
             navController.navigate(R.id.perfilFragment)
         }
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             navController.popBackStack()
         }
 
-        // Mostrar/ocultar la flecha según en qué pantalla estés
+        // Mostrar la flecha solo en pantallas hijas
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.btnAtras.visibility =
                 if (destination.id in pestañasRaiz) View.GONE else View.VISIBLE

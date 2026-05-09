@@ -36,6 +36,7 @@ class EquipoFragment : Fragment() {
         configurarVistaPorRol()
         configurarRecyclerView()
         observarNadadores()
+        observarEliminacion()
         cargarDatos()
     }
 
@@ -61,17 +62,36 @@ class EquipoFragment : Fragment() {
     }
 
     private fun configurarRecyclerView() {
-        adapter = NadadorEquipoAdapter { nadador ->
-            // Solo el entrenador puede asignar marcas tocando un nadador
-            if (sessionManager.esEntrenador()) {
-                val bundle = Bundle().apply {
-                    putInt("idNadadorEquipo", nadador.idNadadorEquipo)
+        val esEntrenador = sessionManager.esEntrenador()
+        adapter = NadadorEquipoAdapter(
+            mostrarBotonEliminar = esEntrenador,
+            onClick = { nadador ->
+                // Solo el entrenador puede asignar marcas tocando un nadador
+                if (esEntrenador) {
+                    val bundle = Bundle().apply { putInt("idNadadorEquipo", nadador.idNadadorEquipo) }
+                    findNavController().navigate(R.id.action_equipo_to_crearTiempo, bundle)
                 }
-                findNavController().navigate(R.id.action_equipo_to_crearTiempo, bundle)
+            },
+            onEliminarClick = { nadador ->
+                mostrarConfirmacionEliminar(nadador)
             }
-        }
+        )
         binding.rvNadadores.layoutManager = LinearLayoutManager(requireContext())
         binding.rvNadadores.adapter = adapter
+    }
+
+    private fun mostrarConfirmacionEliminar(nadador: com.swimming.app.domain.model.NadadorEquipo) {
+        android.util.Log.d("ELIMINAR", "2. Mostrando diálogo para ${nadador.nombre}")
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Eliminar nadador")
+            .setMessage("¿Seguro que quieres eliminar a ${nadador.nombre} ${nadador.apellidos} del equipo? " +
+                    "Si está conectado a una cuenta de usuario, esa cuenta saldrá del equipo automáticamente.")
+            .setPositiveButton("Eliminar") { _, _ ->
+                android.util.Log.d("ELIMINAR", "3. Confirmado, llamando al ViewModel con id=${nadador.idNadadorEquipo}")
+                viewModel.eliminarNadador(nadador.idNadadorEquipo)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun observarNadadores() {
@@ -79,6 +99,20 @@ class EquipoFragment : Fragment() {
             when (result) {
                 is NetworkResult.Success -> adapter.submitList(result.data)
                 is NetworkResult.Error -> Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
+                is NetworkResult.Loading -> {}
+            }
+        }
+    }
+
+    private fun observarEliminacion() {
+        viewModel.nadadorEliminado.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is NetworkResult.Success -> {
+                    Toast.makeText(requireContext(), "Nadador eliminado", Toast.LENGTH_SHORT).show()
+                    cargarDatos() // Recargar la lista
+                }
+                is NetworkResult.Error ->
+                    Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
                 is NetworkResult.Loading -> {}
             }
         }

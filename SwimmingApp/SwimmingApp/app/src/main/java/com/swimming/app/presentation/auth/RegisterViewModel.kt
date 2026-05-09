@@ -8,7 +8,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.swimming.app.domain.usecase.auth.RegisterEntrenadorUseCase
 import com.swimming.app.domain.usecase.auth.RegisterNadadorUseCase
-import com.swimming.app.utils.Constants
 import com.swimming.app.utils.NetworkResult
 import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,63 +30,46 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             _registerResult.value = NetworkResult.Loading
             try {
-                // 1) Crear usuario en Firebase
-                val user = firebaseAuth.createUserWithEmailAndPassword(email, password)
-                    .await().user
+                // 1. Crear usuario en Firebase
+                val firebaseResultado = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+                val user = firebaseResultado.user
                 if (user == null) {
                     _registerResult.value = NetworkResult.Error("Error al crear la cuenta en Firebase")
                     return@launch
                 }
 
-                // 2) Actualizar nombre en Firebase
-                user.updateProfile(
-                    UserProfileChangeRequest.Builder()
-                        .setDisplayName("$nombre $apellidos")
-                        .build()
-                ).await()
+                // 2. Actualizar nombre en Firebase
+                val profileUpdate = UserProfileChangeRequest.Builder()
+                    .setDisplayName("$nombre $apellidos")
+                    .build()
+                user.updateProfile(profileUpdate).await()
 
-                // 3) Registrar en la API según el rol y guardar la sesión con el ID REAL
+                // 3. Registrar en la API según el rol
                 if (rol == "Entrenador") {
                     val resultado = registerEntrenador(nombre, apellidos, email, password)
-                    if (resultado is NetworkResult.Success) {
-                        val entrenador = resultado.data
-                        sessionManager.guardarSesion(
-                            id = entrenador.id,
-                            email = entrenador.email,
-                            rol = Constants.ROL_ENTRENADOR,
-                            nombre = entrenador.nombre,
-                            apellidos = entrenador.apellidos,
-                            equipoId = entrenador.idEquipoGestionado
-                        )
-                        _registerResult.value = NetworkResult.Success(true)
-                    } else {
+                    if (resultado is NetworkResult.Error) {
                         user.delete().await()
-                        val mensaje = (resultado as? NetworkResult.Error)?.message
-                            ?: "Error al registrar entrenador en el servidor"
-                        _registerResult.value = NetworkResult.Error(mensaje)
+                        _registerResult.value = NetworkResult.Error("Error al registrar en el servidor")
+                        return@launch
                     }
                 } else {
                     val resultado = registerNadador(nombre, apellidos, email, password)
-                    if (resultado is NetworkResult.Success) {
-                        val nadador = resultado.data
-                        sessionManager.guardarSesion(
-                            id = nadador.id,
-                            email = nadador.email,
-                            rol = Constants.ROL_NADADOR,
-                            nombre = nadador.nombre,
-                            apellidos = nadador.apellidos,
-                            equipoId = nadador.idEquipo
-                        )
-                        sessionManager.guardarIdNadador(nadador.idNadador)
-                        sessionManager.guardarIdNadadorEquipo(nadador.idNadadorEquipo ?: -1)
-                        _registerResult.value = NetworkResult.Success(true)
-                    } else {
+                    if (resultado is NetworkResult.Error) {
                         user.delete().await()
-                        val mensaje = (resultado as? NetworkResult.Error)?.message
-                            ?: "Error al registrar nadador en el servidor"
-                        _registerResult.value = NetworkResult.Error(mensaje)
+                        _registerResult.value = NetworkResult.Error("Error al registrar en el servidor")
+                        return@launch
                     }
                 }
+
+                // 4. Enviar email de verificación
+                user.sendEmailVerification().await()
+
+                // 5. Cerrar sesión: el usuario debe verificar el email antes de poder entrar
+                firebaseAuth.signOut()
+                sessionManager.cerrarSesion()
+
+                _registerResult.value = NetworkResult.Success(true)
+
             } catch (e: Exception) {
                 _registerResult.value = NetworkResult.Error(e.message ?: "Error al crear la cuenta")
             }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Tema base de la app: hereda de Material y aplica nuestra paleta -->
+    <style name="Theme.SwimmingApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Colores de marca -->
+        <item name="colorPrimary">@color/azul_marino</item>
+        <item name="colorPrimaryVariant">@color/azul_medio</item>
+        <item name="colorOnPrimary">@color/blanco</item>
+
+        <item name="colorSecondary">@color/amarillo</item>
+        <item name="colorSecondaryVariant">@color/naranja</item>
+        <item name="colorOnSecondary">@color/azul_marino</item>
+
+        <!-- Fondo y superficies -->
+        <item name="android:colorBackground">@color/bg_pantalla</item>
+        <item name="colorSurface">@color/bg_card</item>
+        <item name="colorOnSurface">@color/texto_primario</item>
+
+        <!-- Barra de estado del sistema (la de la hora/batería arriba) -->
+        <item name="android:statusBarColor">@color/azul_marino</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Estilos reutilizables para que las próximas fases sean rápidas -->
+
+    <!-- Botón "píldora" amarillo (CTAs como "Continuar", "Crear", "Ingresar") -->
+    <style name="Boton.Primario" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/bg_boton_primario</item>
+        <item name="android:textColor">@color/texto_primario</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/texto_m</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/radio_boton</item>
+        <item name="android:minHeight">@dimen/altura_boton</item>
+        <item name="android:paddingStart">@dimen/espacio_xl</item>
+        <item name="android:paddingEnd">@dimen/espacio_xl</item>
+    </style>
+
+    <!-- Botón naranja (acciones secundarias como "Crear cuenta") -->
+    <style name="Boton.Secundario" parent="Boton.Primario">
+        <item name="android:backgroundTint">@color/bg_boton_secundario</item>
+        <item name="android:textColor">@color/blanco</item>
+    </style>
+
+    <!-- Card central de las pantallas (la "isla" sobre fondo azul claro) -->
+    <style name="Card.Pantalla" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/bg_card</item>
+        <item name="cardCornerRadius">@dimen/radio_card</item>
+        <item name="cardElevation">0dp</item>
+        <item name="contentPadding">@dimen/espacio_l</item>
+    </style>
+
+    <!-- Input estilo crema (como en los mockups: fondo amarillo claro con label arriba) -->
+    <style name="Input.Crema" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/bg_input</item>
+        <item name="boxStrokeColor">@color/amarillo</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radio_input</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radio_input</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radio_input</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radio_input</item>
+        <item name="hintTextColor">@color/texto_primario</item>
+    </style>
+
+    <!-- Cabecera de sección (los "Calendario semanal", "Mis marcas"...) -->
+    <style name="TextoSeccion">
+        <item name="android:textSize">@dimen/texto_l</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/texto_primario</item>
+    </style>
+
+    <!-- Título grande (como "Iniciar sesión", "Perfil del usuario") -->
+    <style name="TextoTitulo">
+        <item name="android:textSize">@dimen/texto_titulo</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/texto_primario</item>
+    </style>
+
+</resources>

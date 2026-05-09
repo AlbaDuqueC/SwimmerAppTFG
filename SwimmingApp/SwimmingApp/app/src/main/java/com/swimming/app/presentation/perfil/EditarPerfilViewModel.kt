@@ -9,6 +9,7 @@ import com.swimming.app.domain.usecase.entrenador.EliminarEntrenadorUseCase
 import com.swimming.app.domain.usecase.nadador.ActualizarNadadorUseCase
 import com.swimming.app.domain.usecase.nadador.EliminarNadadorUseCase
 import com.swimming.app.utils.NetworkResult
+import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +20,8 @@ class EditarPerfilViewModel @Inject constructor(
     private val actualizarNadador: ActualizarNadadorUseCase,
     private val actualizarEntrenador: ActualizarEntrenadorUseCase,
     private val eliminarNadador: EliminarNadadorUseCase,
-    private val eliminarEntrenador: EliminarEntrenadorUseCase
+    private val eliminarEntrenador: EliminarEntrenadorUseCase,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _actualizacionResult = MutableLiveData<NetworkResult<Boolean>>()
@@ -37,7 +39,11 @@ class EditarPerfilViewModel @Inject constructor(
                 actualizarNadador(id, nombre, apellidos)
             }
             _actualizacionResult.value = when (resultado) {
-                is NetworkResult.Success -> NetworkResult.Success(true)
+                is NetworkResult.Success -> {
+                    // Actualizar sesión local con los nuevos datos
+                    sessionManager.actualizarNombreApellidos(nombre, apellidos)
+                    NetworkResult.Success(true)
+                }
                 is NetworkResult.Error -> NetworkResult.Error(resultado.message)
                 else -> NetworkResult.Error("Error desconocido")
             }

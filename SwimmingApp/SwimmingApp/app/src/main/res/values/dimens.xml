@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Espaciados -->
+    <dimen name="espacio_xs">4dp</dimen>
+    <dimen name="espacio_s">8dp</dimen>
+    <dimen name="espacio_m">16dp</dimen>
+    <dimen name="espacio_l">24dp</dimen>
+    <dimen name="espacio_xl">32dp</dimen>
+
+    <!-- Radios (para esquinas redondeadas de botones, cards, inputs) -->
+    <dimen name="radio_input">8dp</dimen>
+    <dimen name="radio_boton">28dp</dimen>      <!-- botones tipo "píldora" como en los mockups -->
+    <dimen name="radio_card">20dp</dimen>
+    <dimen name="radio_card_pequeño">12dp</dimen>
+
+    <!-- Alturas -->
+    <dimen name="altura_boton">52dp</dimen>
+    <dimen name="altura_input">56dp</dimen>
+    <dimen name="altura_header">60dp</dimen>
+    <dimen name="altura_bottom_nav">64dp</dimen>
+
+    <!-- Tamaños de iconos -->
+    <dimen name="icono_boton_atras">28dp</dimen>
+    <dimen name="icono_perfil_top">40dp</dimen>
+    <dimen name="icono_nav">28dp</dimen>
+
+    <!-- Tipografía -->
+    <dimen name="texto_xs">12sp</dimen>
+    <dimen name="texto_s">14sp</dimen>
+    <dimen name="texto_m">16sp</dimen>
+    <dimen name="texto_l">18sp</dimen>
+    <dimen name="texto_xl">22sp</dimen>
+    <dimen name="texto_titulo">26sp</dimen>
+
+</resources>

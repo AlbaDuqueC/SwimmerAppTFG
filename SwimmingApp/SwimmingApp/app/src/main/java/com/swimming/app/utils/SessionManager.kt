@@ -52,4 +52,12 @@ class SessionManager @Inject constructor(
     fun guardarEquipoId(equipoId: Int) {
         prefs.edit().putInt("userEquipoId", equipoId).apply()
     }
+
+    /** Actualiza solo el nombre y apellidos en la sesión local (tras editar perfil). */
+    fun actualizarNombreApellidos(nombre: String, apellidos: String) {
+        prefs.edit()
+            .putString("userName", nombre)
+            .putString("userApellidos", apellidos)
+            .apply()
+    }
 }

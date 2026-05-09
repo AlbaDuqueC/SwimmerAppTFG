@@ -3,19 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
-    android:gravity="center_vertical">
+    android:padding="@dimen/espacio_m"
+    android:gravity="center_vertical"
+    android:background="@drawable/bg_card_evento"
+    android:layout_marginBottom="@dimen/espacio_s">
 
     <TextView
         android:id="@+id/tvLetraInicial"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:background="#F4A825"
+        android:background="@drawable/bg_circle_amarillo"
         android:gravity="center"
         android:text="E"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/blanco"
         android:textStyle="bold"
-        android:layout_marginEnd="12dp"/>
+        android:layout_marginEnd="@dimen/espacio_m"/>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -28,16 +30,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Entrenamiento"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
+            android:textSize="@dimen/texto_s"
+            android:textStyle="bold"
+            android:textColor="@color/texto_primario"/>
 
         <TextView
             android:id="@+id/tvFechaEvento"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Fecha"
-            android:textSize="12sp"
-            android:textColor="#666666"/>
+            android:textSize="@dimen/texto_xs"
+            android:textColor="@color/gris_texto"/>
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnEliminar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_delete"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Eliminar nadador"
+        android:visibility="gone"/>
 
 </LinearLayout>
