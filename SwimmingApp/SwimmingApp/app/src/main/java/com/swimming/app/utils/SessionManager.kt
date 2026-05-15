@@ -53,6 +53,11 @@ class SessionManager @Inject constructor(
         prefs.edit().putInt("userEquipoId", equipoId).apply()
     }
 
+    /** Borra el equipoId de la sesión local (tras eliminar el equipo). */
+    fun borrarEquipoId() {
+        prefs.edit().putInt("userEquipoId", -1).apply()
+    }
+
     /** Actualiza solo el nombre y apellidos en la sesión local (tras editar perfil). */
     fun actualizarNombreApellidos(nombre: String, apellidos: String) {
         prefs.edit()

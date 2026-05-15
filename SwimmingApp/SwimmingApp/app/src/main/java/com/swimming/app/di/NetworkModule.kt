@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import com.google.firebase.auth.FirebaseAuth
 
@@ -21,7 +22,12 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-        val resultado = OkHttpClient.Builder().addInterceptor(logging).build()
+        val resultado = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .connectTimeout(60, TimeUnit.SECONDS)  // Render tarda hasta 50s en despertar (plan gratis)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build()
         return resultado
     }
 

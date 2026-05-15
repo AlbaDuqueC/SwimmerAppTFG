@@ -22,7 +22,8 @@ interface EntrenadorRepository {
 
 interface EquipoRepository {
     suspend fun obtenerEquipo(id: Int): NetworkResult<Equipo>
-    suspend fun crearEquipo(nombre: String, idEntrenador: Int?): NetworkResult<Equipo>  // ✨ NUEVO param
+    suspend fun crearEquipo(nombre: String, idEntrenador: Int?): NetworkResult<Equipo>
+    suspend fun actualizarEquipo(id: Int, nombre: String): NetworkResult<Equipo>
     suspend fun eliminarEquipo(id: Int): NetworkResult<Boolean>
 }
 

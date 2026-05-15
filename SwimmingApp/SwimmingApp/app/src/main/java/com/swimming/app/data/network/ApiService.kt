@@ -21,6 +21,8 @@ interface ApiService {
 
     @POST("equipo") suspend fun crearEquipo(@Body dto: EquipoRequestDto): Response<ApiResponseDto<EquipoResponseDto>>
     @GET("equipo/{id}") suspend fun obtenerEquipo(@Path("id") id: Int): Response<ApiResponseDto<EquipoResponseDto>>
+    @PUT("equipo/{id}") suspend fun actualizarEquipo(@Path("id") id: Int, @Body dto: EquipoRequestDto): Response<ApiResponseDto<EquipoResponseDto>>
+    @DELETE("equipo/{id}") suspend fun eliminarEquipo(@Path("id") id: Int): Response<ApiResponseDto<Boolean>>
 
     @GET("nadadorequipo/equipo/{idEquipo}") suspend fun obtenerNadadoresPorEquipo(@Path("idEquipo") idEquipo: Int): Response<ApiResponseDto<List<NadadorEquipoResponseDto>>>
     @GET("nadadorequipo/codigo/{codigo}") suspend fun obtenerPorCodigo(@Path("codigo") codigo: Int): Response<ApiResponseDto<NadadorEquipoResponseDto>>

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.swimming.app.R
 import com.swimming.app.databinding.FragmentTiemposBinding
 import com.swimming.app.utils.NetworkResult
+import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,8 +41,15 @@ class TiemposFragment : Fragment() {
         binding.rvMarcasEntrenador.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMarcasEntrenador.adapter = adapterEntrenador
 
-        binding.fabAnadir.setOnClickListener {
-            findNavController().navigate(R.id.action_tiempos_to_crearTiempo)
+        // Ocultar el FAB si el usuario es entrenador.
+        // El entrenador solo puede crear tiempos pulsando sobre un nadador de su equipo.
+        val sessionManager = SessionManager(requireContext())
+        if (sessionManager.esEntrenador()) {
+            binding.fabAnadir.visibility = View.GONE
+        } else {
+            binding.fabAnadir.setOnClickListener {
+                findNavController().navigate(R.id.action_tiempos_to_crearTiempo)
+            }
         }
 
         // Lista "Mis marcas" (o lista única para entrenador)

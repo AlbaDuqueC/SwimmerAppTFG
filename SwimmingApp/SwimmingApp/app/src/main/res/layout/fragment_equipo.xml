@@ -6,6 +6,45 @@
     android:orientation="vertical"
     android:padding="@dimen/espacio_m">
 
+    <!-- Cabecera de equipo: solo visible para entrenador CON equipo -->
+    <LinearLayout
+        android:id="@+id/layoutCabeceraEquipo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/espacio_s"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvNombreEquipo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="@color/azul_marino"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+
+        <ImageButton
+            android:id="@+id/btnEditarEquipo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="4dp"
+            android:src="@android:drawable/ic_menu_edit"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Editar nombre del equipo"/>
+
+        <ImageButton
+            android:id="@+id/btnEliminarEquipo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Eliminar equipo"/>
+
+    </LinearLayout>
+
     <!-- Botones solo visibles para entrenador -->
     <LinearLayout
         android:id="@+id/layoutBotonesEntrenador"

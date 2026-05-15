@@ -18,3 +18,17 @@ class CrearEquipoUseCase @Inject constructor(private val repo: EquipoRepository)
         return resultado
     }
 }
+
+class ActualizarEquipoUseCase @Inject constructor(private val repo: EquipoRepository) {
+    suspend operator fun invoke(id: Int, nombre: String): NetworkResult<Equipo> {
+        val resultado = repo.actualizarEquipo(id, nombre)
+        return resultado
+    }
+}
+
+class EliminarEquipoUseCase @Inject constructor(private val repo: EquipoRepository) {
+    suspend operator fun invoke(id: Int): NetworkResult<Boolean> {
+        val resultado = repo.eliminarEquipo(id)
+        return resultado
+    }
+}

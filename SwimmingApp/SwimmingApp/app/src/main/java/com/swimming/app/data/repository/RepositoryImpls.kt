@@ -280,9 +280,25 @@ class EquipoRepositoryImpl @Inject constructor(
         return resultado
     }
 
+    override suspend fun actualizarEquipo(id: Int, nombre: String): NetworkResult<Equipo> {
+        val resultado = try {
+            val response = api.actualizarEquipo(id, EquipoRequestDto(nombre, null))
+            if (response.isSuccessful && response.body()?.datos != null) {
+                val dto = response.body()!!.datos!!
+                dao.insertar(dto.toEntity())
+                NetworkResult.Success(dto.toDomain())
+            } else {
+                NetworkResult.Error(response.body()?.mensaje ?: "Error al actualizar equipo")
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error("Sin conexión a internet")
+        }
+        return resultado
+    }
+
     override suspend fun eliminarEquipo(id: Int): NetworkResult<Boolean> {
         val resultado = try {
-            val response = api.eliminarNadador(id)
+            val response = api.eliminarEquipo(id)  // ✅ ARREGLADO: ahora llama al endpoint correcto
             if (response.isSuccessful) NetworkResult.Success(true)
             else NetworkResult.Error("Error al eliminar equipo")
         } catch (e: Exception) {
