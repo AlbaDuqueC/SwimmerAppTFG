@@ -14,6 +14,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/**
+ * ViewModel de la pantalla de login.
+ * Combina la autenticación de Firebase con la consulta a la API
+ * para obtener los datos del usuario y guardar la sesión local.
+ *
+ * Flujo:
+ *   1. Iniciar sesión en Firebase.
+ *   2. Comprobar que el email está verificado.
+ *   3. Buscar al usuario en la API (primero como nadador, luego como entrenador).
+ *   4. Guardar los datos en SessionManager.
+ */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
@@ -21,9 +32,15 @@ class LoginViewModel @Inject constructor(
     private val apiService: ApiService
 ) : ViewModel() {
 
+    // LiveData privado donde el ViewModel publica el resultado.
     private val _loginResult = MutableLiveData<NetworkResult<Boolean>>()
+    // LiveData público de solo lectura que observa la Activity.
     val loginResult: LiveData<NetworkResult<Boolean>> = _loginResult
 
+    /**
+     * Intenta iniciar sesión con el email y la contraseña indicados.
+     * Realiza todo el flujo en una corrutina dentro del scope del ViewModel.
+     */
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _loginResult.value = NetworkResult.Loading
@@ -36,7 +53,8 @@ class LoginViewModel @Inject constructor(
                     return@launch
                 }
 
-                // 1. Comprobar si el email está verificado
+                // 1. Comprobar si el email está verificado.
+                // Si no lo está, se reenvía el email de verificación y se cierra sesión.
                 user.reload().await()
                 if (!user.isEmailVerified) {
                     try { user.sendEmailVerification().await() } catch (_: Exception) {}
@@ -47,13 +65,15 @@ class LoginViewModel @Inject constructor(
                     return@launch
                 }
 
-                // 2. Buscar el usuario en la API por email — primero como nadador, si no, como entrenador
+                // 2. Buscar el usuario en la API por email.
+                // Primero se intenta como nadador, y si no se encuentra, como entrenador.
                 val emailUsuario = user.email ?: ""
                 val nombreFb = user.displayName ?: ""
 
                 val resNadador = apiService.obtenerNadadorPorEmail(emailUsuario)
                 if (resNadador.isSuccessful && resNadador.body()?.datos != null) {
                     val nadador = resNadador.body()!!.datos!!
+                    // Se guarda la sesión local con los datos del nadador.
                     sessionManager.guardarSesion(
                         id = nadador.idNadador,
                         email = nadador.email,
@@ -71,6 +91,7 @@ class LoginViewModel @Inject constructor(
                 val resEntrenador = apiService.obtenerEntrenadorPorEmail(emailUsuario)
                 if (resEntrenador.isSuccessful && resEntrenador.body()?.datos != null) {
                     val entrenador = resEntrenador.body()!!.datos!!
+                    // Se guarda la sesión local con los datos del entrenador.
                     sessionManager.guardarSesion(
                         id = entrenador.idEntrenador,
                         email = entrenador.email,

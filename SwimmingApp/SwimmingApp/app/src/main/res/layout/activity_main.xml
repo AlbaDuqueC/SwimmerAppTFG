@@ -16,17 +16,19 @@
         android:paddingStart="@dimen/espacio_m"
         android:paddingEnd="@dimen/espacio_m">
 
-        <!-- Foto de perfil del usuario (siempre visible) -->
-        <ImageButton
+        <!-- Foto de perfil del usuario en formato circular (siempre visible).
+             ShapeableImageView recorta automáticamente la imagen en círculo. -->
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/btnTopPerfil"
             android:layout_width="@dimen/icono_perfil_top"
             android:layout_height="@dimen/icono_perfil_top"
-            android:background="@drawable/bg_avatar_circle"
-            android:padding="6dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/usuario"
+            android:scaleType="centerCrop"
+            android:src="@drawable/gato_perfil"
             android:contentDescription="Ir al Perfil"
-            app:tint="@color/blanco"/>
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:shapeAppearanceOverlay="@style/CircularImage"/>
 
         <View
             android:layout_width="0dp"

@@ -17,7 +17,10 @@ import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-/** Pantalla de edición de perfil. Permite actualizar nombre/apellidos y eliminar la cuenta. */
+/**
+ * Pantalla de edición del perfil del usuario.
+ * Permite actualizar el nombre y los apellidos, o eliminar la cuenta por completo.
+ */
 @AndroidEntryPoint
 class EditarPerfilFragment : Fragment() {
 
@@ -39,6 +42,7 @@ class EditarPerfilFragment : Fragment() {
         observarResultados()
     }
 
+    /** Rellena los campos con los datos actuales del usuario. */
     private fun rellenarCampos() {
         binding.etNombre.setText(sessionManager.getUserNombre())
         binding.etApellidos.setText(sessionManager.getUserApellidos())
@@ -49,6 +53,7 @@ class EditarPerfilFragment : Fragment() {
         binding.btnEliminarCuenta.setOnClickListener { confirmarEliminacion() }
     }
 
+    /** Valida los campos y lanza la actualización del perfil en el ViewModel. */
     private fun actualizarPerfil() {
         val nombre = binding.etNombre.text?.toString()?.trim().orEmpty()
         val apellidos = binding.etApellidos.text?.toString()?.trim().orEmpty()
@@ -58,10 +63,12 @@ class EditarPerfilFragment : Fragment() {
             return
         }
 
-        binding.btnAceptar.isEnabled = false  // ← evita doble click
+        // El botón se deshabilita para evitar dobles pulsaciones mientras se procesa.
+        binding.btnAceptar.isEnabled = false
         viewModel.actualizarPerfil(sessionManager.getUserId(), nombre, apellidos, sessionManager.esEntrenador())
     }
 
+    /** Muestra un diálogo de confirmación antes de eliminar la cuenta. */
     private fun confirmarEliminacion() {
         AlertDialog.Builder(requireContext())
             .setTitle("Eliminar cuenta")
@@ -73,6 +80,7 @@ class EditarPerfilFragment : Fragment() {
             .show()
     }
 
+    /** Observa los resultados de actualización y eliminación del perfil. */
     private fun observarResultados() {
         viewModel.actualizacionResult.observe(viewLifecycleOwner) { result ->
             when (result) {
@@ -82,7 +90,7 @@ class EditarPerfilFragment : Fragment() {
                 }
                 is NetworkResult.Error -> {
                     Toast.makeText(requireContext(), result.message, Toast.LENGTH_SHORT).show()
-                    binding.btnAceptar.isEnabled = true  // ← reactiva si falla
+                    binding.btnAceptar.isEnabled = true
                 }
                 else -> {}
             }
@@ -91,6 +99,7 @@ class EditarPerfilFragment : Fragment() {
         viewModel.eliminacionResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> {
+                    // Tras eliminar la cuenta, se cierra sesión y se vuelve al splash.
                     sessionManager.cerrarSesion()
                     val intent = Intent(requireContext(), com.swimming.app.presentation.splash.SplashActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

@@ -14,7 +14,11 @@ import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-/** Pantalla para crear un NadadorEquipo. Solo accesible para entrenadores. */
+/**
+ * Pantalla para crear una ficha de NadadorEquipo dentro del equipo del entrenador.
+ * Solo es accesible para entrenadores. Al guardar, la API genera automáticamente
+ * un código único de 6 dígitos para que el nadador real pueda vincularse.
+ */
 @AndroidEntryPoint
 class CrearNadadorFragment : Fragment() {
 
@@ -39,6 +43,7 @@ class CrearNadadorFragment : Fragment() {
         binding.btnCrear.setOnClickListener { intentarCrear() }
     }
 
+    /** Valida los campos del formulario y lanza la creación en la API a través del ViewModel. */
     private fun intentarCrear() {
         val nombre = binding.etNombre.text.toString().trim()
         val apellidos = binding.etApellidos.text.toString().trim()
@@ -57,6 +62,7 @@ class CrearNadadorFragment : Fragment() {
         viewModel.crearNuevoNadador(nombre, apellidos, idEquipo)
     }
 
+    /** Observa el resultado de la creación y vuelve a la pantalla anterior al éxito. */
     private fun observarResultado() {
         viewModel.nadadorCreado.observe(viewLifecycleOwner) { result ->
             when (result) {

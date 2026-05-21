@@ -11,12 +11,23 @@ import com.swimming.app.presentation.main.MainActivity
 import com.swimming.app.utils.NetworkResult
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Pantalla de inicio de sesión.
+ * Permite al usuario introducir email y contraseña, o navegar al registro
+ * para crear una cuenta nueva. Delega toda la lógica al LoginViewModel.
+ *
+ * @AndroidEntryPoint habilita la inyección de dependencias con Hilt.
+ */
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
+    // ViewBinding para acceder a las vistas del layout sin findViewById.
     private lateinit var binding: ActivityLoginBinding
+
+    // ViewModel inyectado automáticamente por Hilt.
     private val viewModel: LoginViewModel by viewModels()
 
+    /** Inicializa la pantalla al crearse. */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -25,6 +36,7 @@ class LoginActivity : AppCompatActivity() {
         observarResultado()
     }
 
+    /** Asocia los botones de la UI con sus acciones. */
     private fun configurarBotones() {
         binding.btnIniciarSesion.setOnClickListener { intentarLogin() }
         binding.btnCrearCuenta.setOnClickListener {
@@ -32,6 +44,10 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Valida los campos del formulario y, si son correctos,
+     * delega la operación al ViewModel mostrando un indicador de carga.
+     */
     private fun intentarLogin() {
         val email = binding.etEmail.text?.toString()?.trim().orEmpty()
         val password = binding.etPassword.text?.toString()?.trim().orEmpty()
@@ -43,6 +59,10 @@ class LoginActivity : AppCompatActivity() {
         viewModel.login(email, password)
     }
 
+    /**
+     * Observa el LiveData del ViewModel y reacciona al resultado del login:
+     * navega a MainActivity si tiene éxito o muestra un Toast si falla.
+     */
     private fun observarResultado() {
         viewModel.loginResult.observe(this) { result ->
             binding.progressBar.visibility = View.GONE

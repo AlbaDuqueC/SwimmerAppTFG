@@ -14,7 +14,10 @@ import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-/** Pantalla de impresión. Muestra todas las marcas del equipo y permite exportarlas. */
+/**
+ * Pantalla de impresión. Muestra todas las marcas del equipo
+ * y permite exportarlas para imprimirlas.
+ */
 @AndroidEntryPoint
 class ImprimirFragment : Fragment() {
 
@@ -38,12 +41,14 @@ class ImprimirFragment : Fragment() {
         cargarMarcas()
     }
 
+    /** Configura el RecyclerView con el adapter de marcas y un LinearLayoutManager. */
     private fun configurarRecyclerView() {
         adapter = MarcasAdapter()
         binding.rvMarcas.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMarcas.adapter = adapter
     }
 
+    /** Observa la lista de marcas del ViewModel y la inyecta en el adapter. */
     private fun observarMarcas() {
         viewModel.marcas.observe(viewLifecycleOwner) { result ->
             when (result) {
@@ -54,12 +59,14 @@ class ImprimirFragment : Fragment() {
         }
     }
 
+    /** Configura el botón de impresión. */
     private fun configurarBotonImprimir() {
         binding.btnImprimir.setOnClickListener {
             Toast.makeText(requireContext(), "Preparando impresión...", Toast.LENGTH_SHORT).show()
         }
     }
 
+    /** Carga las marcas del equipo activo de la sesión. */
     private fun cargarMarcas() {
         val idEquipo = sessionManager.getEquipoId()
         if (idEquipo != null) viewModel.cargarMarcas(idEquipo)

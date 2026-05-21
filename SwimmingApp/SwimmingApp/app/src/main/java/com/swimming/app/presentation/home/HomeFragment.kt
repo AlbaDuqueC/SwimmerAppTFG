@@ -21,6 +21,11 @@ import com.swimming.app.utils.NetworkResult
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 
+/**
+ * Pantalla principal de la app.
+ * Muestra la vista semanal con los eventos del usuario distribuidos por día,
+ * y debajo una lista con los próximos 10 eventos futuros ordenados por fecha.
+ */
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
@@ -29,6 +34,7 @@ class HomeFragment : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var adapter: EventoAdapter
 
+    // Iniciales de los días de la semana para las cabeceras de las columnas.
     private val nombresDias = listOf("L", "M", "X", "J", "V", "S", "D")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -45,6 +51,7 @@ class HomeFragment : Fragment() {
 
         construirSemanaVacia()
 
+        // Observa las rutinas del usuario y actualiza la vista semanal y la lista de próximos.
         viewModel.rutinas.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> {
@@ -59,16 +66,18 @@ class HomeFragment : Fragment() {
         }
 
         viewModel.cargarRutinas()
-
-
     }
 
+    /** Refresca las rutinas al volver a la pantalla. */
     override fun onResume() {
         super.onResume()
         viewModel.cargarRutinas()
     }
 
-    /** Crea 7 columnas con su cabecera (L, M, X...) y un contenedor vacío que apila los eventos del día. */
+    /**
+     * Crea las 7 columnas de la vista semanal (una por día), cada una con
+     * su cabecera (L, M, X...) y un contenedor donde se apilarán los eventos del día.
+     */
     private fun construirSemanaVacia() {
         binding.layoutSemana.removeAllViews()
         val ctx = requireContext()
@@ -78,14 +87,14 @@ class HomeFragment : Fragment() {
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 setPadding(4, 4, 4, 4)
             }
-            // Cabecera del día (L, M, ...)
+            // Cabecera del día (L, M, ...).
             columna.addView(TextView(ctx).apply {
                 text = nombresDias[i]
                 gravity = Gravity.CENTER
                 setTextColor(Color.parseColor("#0A2A3D"))
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
             })
-            // Contenedor vertical donde se apilarán los eventos del día
+            // Contenedor vertical donde se apilarán los eventos del día.
             columna.addView(LinearLayout(ctx).apply {
                 orientation = LinearLayout.VERTICAL
                 tag = "contenedor_$i"
@@ -98,15 +107,17 @@ class HomeFragment : Fragment() {
         }
     }
 
-
-    /** Pone los eventos de la semana actual en su columna correspondiente. Apila múltiples eventos del mismo día. */
+    /**
+     * Inserta los eventos de la semana actual en su columna correspondiente.
+     * Si hay varios eventos en un mismo día, se apilan verticalmente.
+     */
     private fun rellenarSemana(todas: List<Rutina>) {
         val (inicioSemana, finSemana) = limitesSemanaActual()
 
-        // Limpiar contenedores previos
+        // Vaciar los contenedores antes de rellenarlos para evitar duplicados.
         for (i in 0..6) buscarContenedor(i)?.removeAllViews()
 
-        // Filtrar y ordenar los eventos de esta semana por fecha (los más tempranos primero)
+        // Filtrar los eventos de la semana actual y ordenarlos cronológicamente.
         val eventosSemana = todas
             .mapNotNull { rutina -> parsearFecha(rutina.fecha)?.let { rutina to it } }
             .filter { (_, fecha) -> !fecha.before(inicioSemana) && !fecha.after(finSemana) }
@@ -115,11 +126,13 @@ class HomeFragment : Fragment() {
         val ctx = requireContext()
         eventosSemana.forEach { (rutina, fecha) ->
             val cal = Calendar.getInstance().apply { time = fecha }
-            val idx = ((cal.get(Calendar.DAY_OF_WEEK) + 5) % 7) // L=0..D=6
+            // Conversión del día de la semana al índice 0..6 (Lunes=0, Domingo=6).
+            val idx = ((cal.get(Calendar.DAY_OF_WEEK) + 5) % 7)
             val contenedor = buscarContenedor(idx) ?: return@forEach
 
             val hora = "%02d:%02d".format(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE))
 
+            // Tarjeta visual del evento con la hora y el título.
             val tarjeta = TextView(ctx).apply {
                 text = "$hora\n${rutina.contenido}"
                 gravity = Gravity.CENTER
@@ -127,7 +140,6 @@ class HomeFragment : Fragment() {
                 textSize = 9f
                 setPadding(4, 6, 4, 6)
                 setBackgroundColor(Color.parseColor("#0A2A3D"))
-                // Margen entre tarjetas del mismo día
                 val lp = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -139,15 +151,20 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /** Devuelve el contenedor de eventos correspondiente al día indicado. */
     private fun buscarContenedor(index: Int): LinearLayout? {
         val columna = binding.layoutSemana.getChildAt(index) as? LinearLayout ?: return null
         return columna.getChildAt(1) as? LinearLayout
     }
 
+    /**
+     * Calcula el lunes a las 00:00 y el domingo a las 23:59:59 de la semana actual.
+     * Sirve para filtrar qué eventos pertenecen a esta semana.
+     */
     private fun limitesSemanaActual(): Pair<java.util.Date, java.util.Date> {
         val cal = Calendar.getInstance()
         cal.firstDayOfWeek = Calendar.MONDAY
-        // Ir al lunes 00:00:00
+        // Retroceder hasta el lunes más cercano.
         while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) cal.add(Calendar.DAY_OF_MONTH, -1)
         cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0); cal.set(Calendar.SECOND, 0)
         val inicio = cal.time
@@ -157,7 +174,10 @@ class HomeFragment : Fragment() {
         return inicio to fin
     }
 
-    /** Parsea fechas en formatos típicos de la API (con o sin Z, con o sin fracción de segundo). */
+    /**
+     * Parsea una fecha en alguno de los formatos típicos que devuelve la API,
+     * probando varios patrones hasta encontrar uno que coincida.
+     */
     private fun parsearFecha(iso: String): java.util.Date? {
         val intentos = listOf(
             "yyyy-MM-dd'T'HH:mm:ss",
@@ -170,7 +190,7 @@ class HomeFragment : Fragment() {
                 return java.text.SimpleDateFormat(patron, java.util.Locale.US).parse(iso)
             } catch (_: Exception) {}
         }
-        // Último intento: solo los 19 primeros caracteres "yyyy-MM-ddTHH:mm:ss"
+        // Último intento: usar solo los primeros 19 caracteres "yyyy-MM-ddTHH:mm:ss".
         return try {
             java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US).parse(iso.take(19))
         } catch (_: Exception) { null }
@@ -182,6 +202,10 @@ class HomeFragment : Fragment() {
     }
 }
 
+/**
+ * Adaptador del RecyclerView de eventos en la pantalla Home.
+ * Muestra una lista de próximas rutinas con su fecha formateada.
+ */
 class EventoAdapter : ListAdapter<Rutina, EventoAdapter.VH>(object : DiffUtil.ItemCallback<Rutina>() {
     override fun areItemsTheSame(a: Rutina, b: Rutina) = a.id == b.id
     override fun areContentsTheSame(a: Rutina, b: Rutina) = a == b
@@ -190,9 +214,11 @@ class EventoAdapter : ListAdapter<Rutina, EventoAdapter.VH>(object : DiffUtil.It
         fun bind(r: Rutina) {
             b.tvLetraInicial.text = r.contenido.firstOrNull()?.uppercase() ?: "E"
             b.tvNombreEvento.text = r.contenido
-            // Mostrar fecha bonita: "dd/MM HH:mm"
+            // Mostrar la fecha en formato corto y bonito.
             b.tvFechaEvento.text = formatearFechaCorta(r.fecha)
         }
+
+        /** Convierte un ISO completo a un formato compacto "dd/MM HH:mm". */
         private fun formatearFechaCorta(iso: String): String = try {
             val fecha = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.US)
                 .parse(iso.take(19))

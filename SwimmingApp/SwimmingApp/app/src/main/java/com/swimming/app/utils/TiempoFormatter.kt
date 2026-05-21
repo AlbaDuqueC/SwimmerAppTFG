@@ -1,26 +1,33 @@
 package com.swimming.app.utils
 
 /**
- * Formatea un tiempo recibido del API ("00:HH:MM:SS.fffffff") al formato visual "MM:SS.cc"
- * (centésimas, dos decimales). Si la entrada ya está en formato corto, la respeta.
+ * Utilidad para formatear los tiempos de natación entre el formato de la API
+ * y el formato visual que se muestra al usuario.
+ *
+ * La API devuelve los tiempos como "00:HH:MM:SS.fffffff" (TimeSpan de .NET),
+ * pero al usuario le interesa verlos en formato corto "MM:SS.cc" con centésimas.
  */
 object TiempoFormatter {
 
-    /** Convierte "00:01:28.8500000" → "01:28.85". */
+    /**
+     * Convierte un tiempo recibido del API al formato corto "MM:SS.cc".
+     * Ejemplo: "00:01:28.8500000" → "01:28.85".
+     * Si la entrada está vacía devuelve "00:00.00".
+     */
     fun aFormatoCorto(tiempoApi: String): String {
         if (tiempoApi.isBlank()) return "00:00.00"
 
-        // Quitar las horas si vienen y son 00
+        // Si las horas son 00, se eliminan del formato para acortarlo.
         val sinHoras = if (tiempoApi.startsWith("00:") && tiempoApi.count { it == ':' } >= 2) {
             tiempoApi.removePrefix("00:")
         } else tiempoApi
 
-        // Separar parte de segundos.decimal
+        // Separar minutos de la parte segundos.decimal.
         val partes = sinHoras.split(":")
         val minutos = partes.getOrNull(0)?.padStart(2, '0') ?: "00"
         val segYDec = partes.getOrNull(1) ?: "00"
 
-        // Recortar las décimas/centésimas a 2 dígitos
+        // Recortar las décimas/centésimas a 2 dígitos (ignorando ceros sobrantes).
         val (seg, dec) = if (segYDec.contains(".")) {
             val (s, d) = segYDec.split(".")
             s to d.padEnd(2, '0').take(2)

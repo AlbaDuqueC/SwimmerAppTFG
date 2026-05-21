@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="@dimen/espacio_m"
     android:gravity="center_vertical"
@@ -42,6 +43,18 @@
             android:textSize="@dimen/texto_xs"
             android:textColor="@color/gris_texto"/>
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnEditar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Editar nadador"
+        android:src="@android:drawable/ic_menu_edit"
+        android:visibility="gone"
+        app:tint="#219EBC" />
 
     <ImageButton
         android:id="@+id/btnEliminar"

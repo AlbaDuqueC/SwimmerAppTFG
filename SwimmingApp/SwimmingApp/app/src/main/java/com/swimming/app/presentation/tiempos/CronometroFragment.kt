@@ -21,6 +21,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Pantalla del cronómetro para medir y guardar tiempos en directo.
+ * Permite iniciar, pausar, reanudar y resetear el cronómetro,
+ * y guardar el tiempo medido como una marca cuando el usuario lo decide.
+ */
 @AndroidEntryPoint
 class CronometroFragment : Fragment() {
 
@@ -30,14 +35,19 @@ class CronometroFragment : Fragment() {
 
     @Inject lateinit var sessionManager: SessionManager
 
+    // Estado interno del cronómetro.
     private var corriendo = false
-    private var tiempoInicio = 0L
-    private var tiempoAcumulado = 0L
+    private var tiempoInicio = 0L     // Marca de tiempo del último arranque.
+    private var tiempoAcumulado = 0L  // Tiempo acumulado de pausas anteriores.
     private val handler = Handler(Looper.getMainLooper())
 
     private var prueba: String = ""
     private var idNadadorEquipoOverride: Int = -1
 
+    /**
+     * Runnable que se ejecuta cada 10 ms para actualizar el display del cronómetro.
+     * Suma el tiempo acumulado más el tiempo transcurrido desde el último arranque.
+     */
     private val actualizador = object : Runnable {
         override fun run() {
             val transcurrido = tiempoAcumulado + (System.currentTimeMillis() - tiempoInicio)
@@ -54,6 +64,7 @@ class CronometroFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Recupera los datos pasados desde la pantalla anterior.
         prueba = arguments?.getString("prueba") ?: ""
         idNadadorEquipoOverride = arguments?.getInt("idNadadorEquipo", -1) ?: -1
         viewModel.descripcion = prueba.ifEmpty { "Entrenamiento" }
@@ -74,6 +85,7 @@ class CronometroFragment : Fragment() {
         }
     }
 
+    /** Listener de la flecha de atrás de la action bar. */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             findNavController().popBackStack()
@@ -82,6 +94,10 @@ class CronometroFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Alterna entre iniciar y pausar el cronómetro.
+     * Al pausarlo, se guarda el tiempo acumulado para reanudarlo desde ahí más tarde.
+     */
     private fun toggleCronometro() {
         if (corriendo) {
             handler.removeCallbacks(actualizador)
@@ -96,6 +112,7 @@ class CronometroFragment : Fragment() {
         }
     }
 
+    /** Resetea el cronómetro a 00:00. */
     private fun resetCronometro() {
         handler.removeCallbacks(actualizador)
         corriendo = false
@@ -104,12 +121,17 @@ class CronometroFragment : Fragment() {
         binding.btnPlayStop.setImageResource(android.R.drawable.ic_media_play)
     }
 
+    /** Convierte el tiempo en milisegundos a un texto "MM:SS" para mostrar en pantalla. */
     private fun actualizarDisplay(ms: Long) {
         val minutos = (ms / 60000) % 60
         val segundos = (ms / 1000) % 60
         binding.tvTiempo.text = String.format("%02d:%02d", minutos, segundos)
     }
 
+    /**
+     * Pausa el cronómetro si está corriendo y guarda el tiempo final como una marca
+     * en el formato "HH:MM:SS.cc" que la API entiende.
+     */
     private fun guardarMarca() {
         if (tiempoAcumulado == 0L && !corriendo) {
             Toast.makeText(requireContext(), "Arranca el cronómetro primero", Toast.LENGTH_SHORT).show()
@@ -130,6 +152,11 @@ class CronometroFragment : Fragment() {
         viewModel.guardarMarca(tiempo, idNadadorEquipoOverride.takeIf { it != -1 })
     }
 
+    /**
+     * Observa el resultado del guardado de la marca y navega a la pantalla apropiada:
+     *   - Vuelve a equipo si era flujo entrenador.
+     *   - Vuelve a tiempos si era flujo nadador.
+     */
     private fun observarResultado() {
         viewModel.marcaGuardada.observe(viewLifecycleOwner) { result ->
             when (result) {
@@ -146,6 +173,7 @@ class CronometroFragment : Fragment() {
         }
     }
 
+    /** Pausa el cronómetro al salir momentáneamente de la pantalla. */
     override fun onPause() {
         super.onPause()
         if (corriendo) {
@@ -155,6 +183,7 @@ class CronometroFragment : Fragment() {
         }
     }
 
+    /** Cancela el actualizador y libera el binding al destruirse la vista. */
     override fun onDestroyView() {
         handler.removeCallbacks(actualizador)
         super.onDestroyView()
@@ -162,6 +191,10 @@ class CronometroFragment : Fragment() {
     }
 }
 
+/**
+ * ViewModel del cronómetro. Encapsula la lógica de guardado de la marca
+ * decidiendo qué IDs enviar según si el flujo es de nadador o de entrenador.
+ */
 @HiltViewModel
 class CronometroViewModel @Inject constructor(
     private val crearMarca: CrearMarcaUseCase,
@@ -171,13 +204,14 @@ class CronometroViewModel @Inject constructor(
     private val _marcaGuardada = MutableLiveData<NetworkResult<MarcaDeTiempo>>()
     val marcaGuardada: LiveData<NetworkResult<MarcaDeTiempo>> = _marcaGuardada
 
+    /** Descripción de la marca (estilo + distancia). Se establece desde el fragment. */
     var descripcion: String = "Entrenamiento"
 
     /**
-     * Guarda una marca de tiempo.
-     * - Si idNadadorEquipoOverride viene → flujo ENTRENADOR: la marca se asigna a ese nadador del equipo,
-     *   con idNadador = null porque no la registró el propio nadador.
-     * - Si no viene → flujo NADADOR: usa los IDs de la sesión (idNadador siempre, idNadadorEquipo si lo tiene).
+     * Guarda una marca de tiempo decidiendo qué IDs enviar a la API:
+     *   - Si llega idNadadorEquipoOverride: flujo ENTRENADOR. La marca se asigna a ese nadador
+     *     con idNadador = null porque no la registró el propio nadador.
+     *   - Si no llega: flujo NADADOR. Se usan los IDs guardados en la sesión local.
      */
     fun guardarMarca(tiempo: String, idNadadorEquipoOverride: Int? = null) {
         viewModelScope.launch {
@@ -187,11 +221,11 @@ class CronometroViewModel @Inject constructor(
             val idNadador: Int?
 
             if (idNadadorEquipoOverride != null) {
-                // Flujo entrenador
+                // Flujo entrenador: la marca se asigna a un nadador del equipo.
                 idNadadorEquipo = idNadadorEquipoOverride
                 idNadador = null
             } else {
-                // Flujo nadador
+                // Flujo nadador: usa los IDs de la sesión.
                 idNadadorEquipo = sessionManager.getIdNadadorEquipo().takeIf { it != -1 }
                 val nadadorId = sessionManager.getIdNadador()
                 if (nadadorId == -1) {

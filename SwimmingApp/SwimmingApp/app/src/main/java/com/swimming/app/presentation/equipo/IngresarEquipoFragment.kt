@@ -22,6 +22,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Pantalla donde el nadador introduce el código de 6 dígitos
+ * que le ha proporcionado el entrenador para unirse al equipo.
+ */
 @AndroidEntryPoint
 class IngresarEquipoFragment : Fragment() {
 
@@ -39,6 +43,7 @@ class IngresarEquipoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Listener del botón "Ingresar": valida el código y lanza la vinculación.
         binding.btnIngresar.setOnClickListener {
             val codigoStr = binding.etCodigo.text.toString().trim()
             val codigo = codigoStr.toIntOrNull()
@@ -57,10 +62,11 @@ class IngresarEquipoFragment : Fragment() {
             viewModel.vincular(idNadador, codigo)
         }
 
+        // Observa el resultado de la vinculación y actualiza la sesión local.
         viewModel.resultado.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is NetworkResult.Success -> {
-                    // Actualizamos la sesión local con el nuevo equipo y NadadorEquipo
+                    // Se actualiza la sesión local con el nuevo equipo y NadadorEquipo.
                     val nadador = result.data
                     sessionManager.guardarIdNadadorEquipo(nadador.idNadadorEquipo ?: -1)
                     nadador.idEquipo?.let { sessionManager.guardarEquipoId(it) }
@@ -83,6 +89,10 @@ class IngresarEquipoFragment : Fragment() {
     }
 }
 
+/**
+ * ViewModel de la pantalla de ingresar al equipo.
+ * Gestiona la vinculación de un nadador con un equipo mediante código.
+ */
 @HiltViewModel
 class IngresarEquipoViewModel @Inject constructor(
     private val vincular: VincularNadadorUseCase
@@ -91,6 +101,7 @@ class IngresarEquipoViewModel @Inject constructor(
     private val _resultado = MutableLiveData<NetworkResult<Nadador>>()
     val resultado: LiveData<NetworkResult<Nadador>> = _resultado
 
+    /** Lanza la vinculación del nadador con el equipo correspondiente al código. */
     fun vincular(idNadador: Int, codigo: Int) {
         viewModelScope.launch {
             _resultado.value = NetworkResult.Loading

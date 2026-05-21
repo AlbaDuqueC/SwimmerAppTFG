@@ -14,7 +14,11 @@ import com.swimming.app.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-/** Pantalla de perfil. Muestra los datos del usuario logueado. */
+/**
+ * Pantalla de perfil del usuario.
+ * Muestra los datos básicos guardados en la sesión local
+ * y permite editar el perfil o cerrar sesión.
+ */
 @AndroidEntryPoint
 class PerfilFragment : Fragment() {
 
@@ -34,6 +38,7 @@ class PerfilFragment : Fragment() {
         configurarBotones()
     }
 
+    /** Rellena la UI con los datos del usuario guardados en la sesión. */
     private fun mostrarDatosUsuario() {
         binding.tvNombreCompleto.text = "${sessionManager.getUserNombre()} ${sessionManager.getUserApellidos()}"
         binding.tvEmail.text = sessionManager.getUserEmail()
@@ -41,12 +46,14 @@ class PerfilFragment : Fragment() {
         binding.tvEquipo.text = "Equipo: ${sessionManager.getEquipoId() ?: "Sin equipo"}"
     }
 
+    /** Configura los listeners de editar perfil y cerrar sesión. */
     private fun configurarBotones() {
         binding.btnEditarPerfil.setOnClickListener {
             findNavController().navigate(R.id.action_perfil_to_editarPerfil)
         }
 
         binding.btnCerrarSesion.setOnClickListener {
+            // Se borran los datos de sesión y se reinicia la app desde el splash.
             sessionManager.cerrarSesion()
             val intent = Intent(requireContext(), com.swimming.app.presentation.splash.SplashActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

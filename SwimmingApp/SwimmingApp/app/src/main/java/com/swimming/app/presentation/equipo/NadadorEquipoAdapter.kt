@@ -9,9 +9,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.swimming.app.databinding.ItemEventoBinding
 import com.swimming.app.domain.model.NadadorEquipo
 
+/**
+ * Adaptador del RecyclerView que muestra la lista de nadadores de un equipo.
+ *
+ * @param mostrarBotones si es true, se muestran los botones de editar y eliminar.
+ * @param onClick callback al pulsar sobre el item completo.
+ * @param onEditarClick callback al pulsar el botón de editar.
+ * @param onEliminarClick callback al pulsar el botón de eliminar.
+ */
 class NadadorEquipoAdapter(
-    private val mostrarBotonEliminar: Boolean = false,
+    private val mostrarBotones: Boolean = false,
     private val onClick: ((NadadorEquipo) -> Unit)? = null,
+    private val onEditarClick: ((NadadorEquipo) -> Unit)? = null,
     private val onEliminarClick: ((NadadorEquipo) -> Unit)? = null
 ) : ListAdapter<NadadorEquipo, NadadorEquipoAdapter.ViewHolder>(DiffCallback()) {
 
@@ -25,12 +34,13 @@ class NadadorEquipoAdapter(
 
             binding.root.setOnClickListener { onClick?.invoke(nadador) }
 
-            // Botón papelera: solo visible si está activado
-            binding.btnEliminar.visibility = if (mostrarBotonEliminar) View.VISIBLE else View.GONE
-            binding.btnEliminar.setOnClickListener {
-                android.util.Log.d("ELIMINAR", "1. Click en papelera de ${nadador.nombre}")
-                onEliminarClick?.invoke(nadador)
-            }
+            // Botones de editar y eliminar: solo visibles si el flag está activo.
+            val visibilidadBotones = if (mostrarBotones) View.VISIBLE else View.GONE
+            binding.btnEditar.visibility = visibilidadBotones
+            binding.btnEliminar.visibility = visibilidadBotones
+
+            binding.btnEditar.setOnClickListener { onEditarClick?.invoke(nadador) }
+            binding.btnEliminar.setOnClickListener { onEliminarClick?.invoke(nadador) }
         }
     }
 

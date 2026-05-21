@@ -60,7 +60,7 @@
                 style="@style/Input.Crema"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Usuario"
+                android:hint="Email"
                 android:layout_marginBottom="@dimen/espacio_m">
 
                 <com.google.android.material.textfield.TextInputEditText

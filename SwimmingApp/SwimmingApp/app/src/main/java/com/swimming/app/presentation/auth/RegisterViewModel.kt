@@ -15,6 +15,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+/**
+ * ViewModel de la pantalla de registro.
+ * Coordina la creación del usuario en Firebase Auth y en la API,
+ * con rollback automático si alguno de los dos pasos falla.
+ *
+ * Flujo:
+ *   1. Crear usuario en Firebase.
+ *   2. Actualizar el nombre en el perfil de Firebase.
+ *   3. Registrar al usuario en la API según el rol elegido.
+ *   4. Enviar email de verificación.
+ *   5. Cerrar sesión hasta que el usuario verifique el email.
+ */
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerNadador: RegisterNadadorUseCase,
@@ -26,11 +38,15 @@ class RegisterViewModel @Inject constructor(
     private val _registerResult = MutableLiveData<NetworkResult<Boolean>>()
     val registerResult: LiveData<NetworkResult<Boolean>> = _registerResult
 
+    /**
+     * Registra al usuario en Firebase y en la API en una transacción coordinada.
+     * Si la creación en la API falla, elimina el usuario de Firebase para mantener consistencia.
+     */
     fun registrar(nombre: String, apellidos: String, email: String, password: String, rol: String) {
         viewModelScope.launch {
             _registerResult.value = NetworkResult.Loading
             try {
-                // 1. Crear usuario en Firebase
+                // 1. Crear usuario en Firebase Auth.
                 val firebaseResultado = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
                 val user = firebaseResultado.user
                 if (user == null) {
@@ -38,13 +54,14 @@ class RegisterViewModel @Inject constructor(
                     return@launch
                 }
 
-                // 2. Actualizar nombre en Firebase
+                // 2. Actualizar el nombre completo en el perfil de Firebase.
                 val profileUpdate = UserProfileChangeRequest.Builder()
                     .setDisplayName("$nombre $apellidos")
                     .build()
                 user.updateProfile(profileUpdate).await()
 
-                // 3. Registrar en la API según el rol
+                // 3. Registrar al usuario en la API según el rol seleccionado.
+                // Si falla, se borra el usuario de Firebase para no dejar cuentas huérfanas.
                 if (rol == "Entrenador") {
                     val resultado = registerEntrenador(nombre, apellidos, email, password)
                     if (resultado is NetworkResult.Error) {
@@ -61,10 +78,10 @@ class RegisterViewModel @Inject constructor(
                     }
                 }
 
-                // 4. Enviar email de verificación
+                // 4. Enviar email de verificación a la dirección registrada.
                 user.sendEmailVerification().await()
 
-                // 5. Cerrar sesión: el usuario debe verificar el email antes de poder entrar
+                // 5. Cerrar sesión: el usuario debe verificar el email antes de poder entrar.
                 firebaseAuth.signOut()
                 sessionManager.cerrarSesion()
 

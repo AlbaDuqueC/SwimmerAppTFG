@@ -76,4 +76,10 @@
         <item name="android:textColor">@color/texto_primario</item>
     </style>
 
+    <!-- Máscara circular para ShapeableImageView (avatares de perfil) -->
+    <style name="CircularImage">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

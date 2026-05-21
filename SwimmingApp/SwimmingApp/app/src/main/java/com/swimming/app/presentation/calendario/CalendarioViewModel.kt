@@ -13,6 +13,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel de la pantalla del calendario.
+ * Carga las rutinas del usuario activo y permite crear nuevas
+ * asociadas a una fecha y hora concretas.
+ */
 @HiltViewModel
 class CalendarioViewModel @Inject constructor(
     private val obtenerRutinas: ObtenerRutinasUseCase,
@@ -26,6 +31,7 @@ class CalendarioViewModel @Inject constructor(
     private val _eventoCreado = MutableLiveData<NetworkResult<Rutina>>()
     val eventoCreado: LiveData<NetworkResult<Rutina>> = _eventoCreado
 
+    /** Carga las rutinas asociadas al usuario activo de la sesión. */
     fun cargarRutinas() {
         viewModelScope.launch {
             _rutinas.value = NetworkResult.Loading
@@ -33,7 +39,10 @@ class CalendarioViewModel @Inject constructor(
         }
     }
 
-    /** fechaIso: "2026-05-15T19:30:00" (ya con hora). */
+    /**
+     * Crea un nuevo evento (rutina) con la fecha y hora indicadas.
+     * @param fechaIso fecha en formato ISO 8601, por ejemplo "2026-05-15T19:30:00Z".
+     */
     fun crearEvento(contenido: String, fechaIso: String) {
         viewModelScope.launch {
             _eventoCreado.value = NetworkResult.Loading
